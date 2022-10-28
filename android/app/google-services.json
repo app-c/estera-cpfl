@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "228733162452",
+    "project_id": "estera-cpfl",
+    "storage_bucket": "estera-cpfl.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:228733162452:android:b0eb35df7e0ebc8659bc41",
+        "android_client_info": {
+          "package_name": "com.esteracontrolecpfl"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "228733162452-pra9mj1crk1caigm4h99j7pdg5igol15.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA0FGtcjYaf98rWAMdsRVGLKtE_cvnOttw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "228733162452-pra9mj1crk1caigm4h99j7pdg5igol15.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
