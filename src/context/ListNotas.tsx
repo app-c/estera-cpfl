@@ -275,7 +275,7 @@ export function NotasProvider({ children }: ProviderProps) {
       const dt = {
         id: eq ? eq.id : "0",
         equipe: h.equipe,
-        mobilidade: eq ? eq.MOBILIDADE : false,
+        mobilidade: false,
         dados: h.dados,
       };
       gds.push(dt);

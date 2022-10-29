@@ -29,18 +29,20 @@ import { CardTotal } from "../components/cardTotal";
 import { Cards } from "../components/cards";
 import { ModalD } from "../components/ModalD";
 import { IUser, useAuth } from "../hooks/AuthContext";
-// import { estera } from "../utilis/estera";
+import { estera as es } from "../utilis/estera";
 import { IPropsEquipe, IProsEster } from "../dtos";
+import { FUNCIONARIOS } from "../utilis/funcionarios";
 import { NotasContext, NotasProvider } from "../context/ListNotas";
 import { theme } from "../global/theme";
 import { ModalAlteraEquiSuper } from "../components/ModalAlteraEqSuper";
+import { Header } from "../components/header";
 
 export function Home() {
   const { colors } = theme;
   const { estera, GDS, ntCancelada, ntReprogramada } = useContext(NotasContext);
   const { user, signOut } = useAuth();
 
-  const w = Dimensions.get("window").width;
+  const w = Dimensions.get("window").width / 2;
 
   const [info, setInfo] = React.useState({} as IProsEster);
   //* * MODAL ...............................................
@@ -91,7 +93,6 @@ export function Home() {
 
   const submitSelectEquipe = React.useCallback(
     (equipe: IPropsEquipe) => {
-      console.log(equipe);
       setSelectEquipe([...selectEquipe, equipe]);
       setShowModalEquipe(false);
     },
@@ -276,15 +277,19 @@ export function Home() {
   }, [estera, date, dateB, search, user, ntReprogramada, ntCancelada]);
 
   const submit = React.useCallback(() => {
-    // for (let i = 0; i < FUNCIONARIOS.length; i += 1) {
-    //   const dados = FUNCIONARIOS[i];
-    //   fire()
-    //     .collection("equipes")
-    //     .add({
-    //       ...dados,
-    //     })
-    //     .then((h) => console.log("ok"));
-    // }
+    for (let i = 0; i < es.length; i += 1) {
+      const dados = {
+        ...es[i],
+        EQUIPE: [],
+        situation: "estera",
+      };
+      fire()
+        .collection("notas")
+        .add({
+          ...dados,
+        })
+        .then((h) => console.log("ok"));
+    }
   }, []);
 
   const total = React.useMemo(() => {
@@ -345,6 +350,7 @@ export function Home() {
   return (
     <>
       <NotasProvider>
+        <Header />
         <Box p="5" flex="1" bg={colors.white[50]}>
           {/* MODAL DE INFORMAÇAO DA NOTA */}
           <Modal visible={showModalId} animationType="fade">
@@ -390,29 +396,14 @@ export function Home() {
             </Box>
           </Modal>
 
-          <Box bg="white.100" w={w} alignSelf="center" mt="-5" p="5">
-            <HStack mt="-3" justifyContent="space-between">
-              <Button
-                bg="blue.10"
-                _text={{ fontSize: 14 }}
-                mb="5"
-                w="20"
-                h={w * 0.1}
-                onPress={() => signOut()}
-              >
-                sair
+          <Box bg="white.100" w={w * 2} alignSelf="center" mt="-5" p="5">
+            {user.type === "dev" && (
+              <Button mb="5" w={w * 0.3} h={w * 0.09} onPress={submit}>
+                Add notas
               </Button>
+            )}
 
-              {user.type === "dev" ? (
-                <Button w={w * 0.3} h={w * 0.1} onPress={submit}>
-                  Add notas
-                </Button>
-              ) : (
-                <Text>{user.nome}</Text>
-              )}
-            </HStack>
-
-            <HStack mt={-2} space={10}>
+            <HStack mt={-2} justifyContent="space-between">
               <TouchableOpacity onPress={showDatepicker}>
                 <Box bg="blue.10" p="2" borderRadius="4">
                   <Text color="#fff" bold fontSize={16}>
@@ -434,14 +425,14 @@ export function Home() {
 
             <Input
               mt="1"
-              w={w * 0.45}
-              h={w * 0.09}
+              w={w * 0.72}
+              h={w * 0.18}
               fontSize="16"
               color="dark.10"
               placeholderTextColor="dark.10"
               borderColor="orange.10"
               keyboardType="numeric"
-              placeholder="pesquisar por nota"
+              placeholder="NOTA"
               onChangeText={setSearch}
               selectionColor="dark.900"
               _focus={{
@@ -478,6 +469,7 @@ export function Home() {
               </ScrollView>
             </Box>
           </Box>
+
           {show && (
             <DateTimePicker
               testID="dateTimePicker"
@@ -604,7 +596,9 @@ export function Home() {
 
             <Box mt="10">
               <HStack alignItems="center" space="4">
-                <Text color="dark.900">NT-CANCELADA</Text>
+                <Text bold color="dark.10">
+                  NT-CANCELADA
+                </Text>
               </HStack>
               <FlatList
                 horizontal

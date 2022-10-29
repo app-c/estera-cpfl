@@ -10,10 +10,15 @@ import {
   Text,
   VStack,
 } from "native-base";
-import { Alert, Dimensions, TouchableOpacity } from "react-native";
+import {
+  ActivityIndicator,
+  Alert,
+  Dimensions,
+  TouchableOpacity,
+} from "react-native";
 import fire from "@react-native-firebase/firestore";
 import * as Linking from "expo-linking";
-import { IProsEster } from "../dtos";
+import { IPropsEquipe, IProsEster } from "../dtos";
 import { ObsParcial } from "./ObsParcial";
 import { useAuth } from "../hooks/AuthContext";
 
@@ -42,7 +47,7 @@ export function ModalD({
   const { user } = useAuth();
   const [modaObs, setModalObs] = useState(false);
 
-  const [nota, setNota] = useState<IProsEster>();
+  const [nota, setNota] = useState<IProsEster>(estera);
 
   useEffect(() => {
     fire()
@@ -50,7 +55,13 @@ export function ModalD({
       .onSnapshot((h) => {
         const nt = h.docs.map((p) => p.data() as IProsEster);
 
-        setNota(nt.find((p) => p.Nota === estera.Nota));
+        const fil = nt.map((p) => {
+          return {
+            ...p,
+          };
+        });
+
+        setNota(fil.find((p) => p.Nota === estera.Nota));
       });
   }, [estera]);
 
@@ -136,7 +147,12 @@ export function ModalD({
 
   return (
     <Box flex="1" w="100%" alignSelf="center" p="10" bg="dark.800">
-      <ObsParcial pres={upObs} id={estera.id} open={modaObs} />
+      <ObsParcial
+        equipe={estera.EQUIPE}
+        pres={upObs}
+        id={estera.id}
+        open={modaObs}
+      />
 
       <HStack justifyContent="space-between">
         <Button onPress={closedModal} w={w * 0.2}>
@@ -181,10 +197,10 @@ export function ModalD({
                 <Text>SUPERVISOR: {nota.SUPERVISOR}</Text>
                 <Text>SITUAÇÃO: {nota.situation}</Text>
                 <Text>Porcentual: {nota.PORCENTUAL}</Text>
-                {nota.EQUIPE && (
+                {nota && (
                   <Box>
                     {nota.EQUIPE.map((h) => (
-                      <Text>{h.equipe}</Text>
+                      <Text key={h.equipe}>{h.equipe}</Text>
                     ))}
                   </Box>
                 )}

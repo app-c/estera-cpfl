@@ -16,6 +16,7 @@ import { add, addDays, eachDayOfInterval, format } from "date-fns";
 import { Feather } from "expo-vector-icons";
 import { addMonths } from "date-fns/esm";
 import { useNavigation } from "@react-navigation/native";
+import fire from "@react-native-firebase/firestore";
 import { NotasContext } from "../context/ListNotas";
 import { CardGestao } from "../components/CadsGestao";
 import { IC4 } from "../dtos";
@@ -134,8 +135,12 @@ export function Gestao() {
       return (ac += Number(i.valor));
     }, 0);
 
+    const tlEmer = emergencia.reduce((ac, i: IC4) => {
+      return (ac += Number(i.valor));
+    }, 0);
+
     const tlPlan = testera + texec + tparci;
-    const tlTotal = texec + tlC4;
+    const tlTotal = texec + tlC4 + tlEmer;
 
     console.log(tlTotal);
     const total = testera.toLocaleString("pt-BR", {
@@ -178,7 +183,7 @@ export function Gestao() {
     fire().collection("faturamento").add({
       valor,
     });
-  }, []);
+  }, [valor]);
 
   return (
     <Box p="10" bg="white.50">
@@ -205,7 +210,7 @@ export function Gestao() {
               borderColor="dark.50"
             />
 
-            <Button onPress={() => {}}>CRIAR</Button>
+            <Button onPress={submit}>CRIAR</Button>
           </Box>
         </Center>
       </Modal>

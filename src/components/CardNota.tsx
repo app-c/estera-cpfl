@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Center, HStack, Image, Text } from "native-base";
 import { TouchableOpacity } from "react-native";
-import truck from "../sessts/images.png";
+import truck from "../assets/images.png";
 
 interface Props {
   nota: number;

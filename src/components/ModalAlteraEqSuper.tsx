@@ -104,7 +104,7 @@ export function ModalAlteraEquiSuper({
             mt="1"
           >
             {users.map((h) => (
-              <Select.Item label={h.nome} value={h.nome} />
+              <Select.Item key={h.nome} label={h.nome} value={h.nome} />
             ))}
           </Select>
           <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
@@ -126,7 +126,7 @@ export function ModalAlteraEquiSuper({
         </TouchableOpacity>
 
         <Button onPress={updateEquipe} mt="10">
-          {loading ? <ActivityIndicator /> : <Text>ATUALIZAR</Text>}
+          {loading ? <ActivityIndicator /> : <Text>FINALIZAR</Text>}
         </Button>
       </Box>
     </>
