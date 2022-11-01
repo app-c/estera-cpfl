@@ -31,7 +31,7 @@ export function InfoEquipe({ equipe, closedModal }: Props) {
               </Box>
             </HStack>
             <Text fontSize={16} bold>
-              Mobilidade:{h.mobilidade}
+              Mobilidade: {h.mobilidade === true ? "sim" : "não"}
             </Text>
           </Box>
         ))}

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Box, Button, Center, Input, Text } from "native-base";
 import fire from "@react-native-firebase/firestore";
 import { format } from "date-fns";
-import { Alert, TouchableOpacity } from "react-native";
+import { Alert, Platform, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
 export function Emergencia() {

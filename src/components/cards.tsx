@@ -2,8 +2,9 @@
 import React from "react";
 import { Box, Center, HStack, Text, VStack } from "native-base";
 import { Dimensions, TouchableOpacity } from "react-native";
-import { Feather } from "expo-vector-icons";
+import { Feather, FontAwesome5 } from "expo-vector-icons";
 import { IPropsEquipe } from "../dtos";
+import { theme } from "../global/theme";
 
 interface Props {
   value: string;
@@ -71,7 +72,23 @@ export function Cards({
             {situation === "nt_parcial" && (
               <TouchableOpacity>
                 <Box>
-                  <Feather name="alert-circle" size={26} color="#f4721b" />
+                  <Feather
+                    name="alert-circle"
+                    size={26}
+                    color={theme.colors.orange[10]}
+                  />
+                </Box>
+              </TouchableOpacity>
+            )}
+
+            {situation === "nt_cancelada" && (
+              <TouchableOpacity>
+                <Box>
+                  <Feather
+                    name="x-square"
+                    size={26}
+                    color={theme.colors.red[10]}
+                  />
                 </Box>
               </TouchableOpacity>
             )}

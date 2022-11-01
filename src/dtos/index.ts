@@ -75,3 +75,9 @@ export interface IProsFuncionarios {
   matricula: number;
   nome: string;
 }
+
+export interface IFaturamento {
+  data: string;
+  id: string;
+  valor: number;
+}

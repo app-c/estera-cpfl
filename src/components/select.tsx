@@ -15,14 +15,14 @@ export function Slect({ select, presSelect }: Props) {
       <Center
         borderColor="orange.10"
         borderWidth={3}
-        w={w * 0.15}
-        h={w * 0.15}
+        w={w * 0.14}
+        h={w * 0.14}
         borderRadius={w * 0.08}
       >
         <Box
           bg={select === true ? "orange.10" : "white.50"}
-          w={w * 0.07}
-          h={w * 0.07}
+          w={w * 0.055}
+          h={w * 0.055}
           borderRadius={w * 0.08}
         />
       </Center>

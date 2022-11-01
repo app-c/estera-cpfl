@@ -72,7 +72,10 @@ export function Parcial() {
   return (
     <Box p="5">
       <Modal isOpen={showModalTruck} onClose={() => setShowModalTruck(false)}>
-        <InfoEquipe equipe={selectEquipe} />
+        <InfoEquipe
+          closedModal={() => setShowModalTruck(false)}
+          equipe={selectEquipe}
+        />
       </Modal>
 
       <Modal isOpen={showModalInfo}>

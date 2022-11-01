@@ -2,7 +2,7 @@
 /* eslint-disable array-callback-return */
 import React, { createContext } from "react";
 import fire from "@react-native-firebase/firestore";
-import { IC4, IProsEster, IProsFuncionarios } from "../dtos";
+import { IC4, IFaturamento, IProsEster, IProsFuncionarios } from "../dtos";
 
 interface ProviderProps {
   children: React.ReactNode;
@@ -16,6 +16,7 @@ interface PropsContext {
   ntCancelada: IProsEster[];
   c4: IC4[];
   emergencia: IC4[];
+  faturamento: IFaturamento[];
 }
 
 export const NotasContext = createContext({} as PropsContext);
@@ -27,6 +28,7 @@ export function NotasProvider({ children }: ProviderProps) {
   const [ntCancelada, setNtCancelada] = React.useState<IProsEster[]>([]);
   const [c4, setC4] = React.useState<IC4[]>([]);
   const [emergencia, setEmergencia] = React.useState<IC4[]>([]);
+  const [faturamento, setFaturamaneto] = React.useState<IFaturamento[]>([]);
 
   React.useEffect(() => {
     fire()
@@ -117,6 +119,19 @@ export function NotasProvider({ children }: ProviderProps) {
         });
 
         setNtCancelada(res);
+      });
+
+    fire()
+      .collection("faturamento")
+      .onSnapshot((h) => {
+        const rs = h.docs.map((p) => {
+          return {
+            id: p.id,
+            ...p.data(),
+          } as IFaturamento;
+        });
+
+        setFaturamaneto(rs);
       });
   }, []);
 
@@ -294,6 +309,7 @@ export function NotasProvider({ children }: ProviderProps) {
         ntReprogramada,
         c4,
         emergencia,
+        faturamento,
       }}
     >
       {children}

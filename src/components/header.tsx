@@ -4,6 +4,7 @@ import { Dimensions, TouchableOpacity } from "react-native";
 import { AntDesign } from "expo-vector-icons";
 import ico from "../assets/ico.png";
 import { useAuth } from "../hooks/AuthContext";
+import { theme } from "../global/theme";
 
 export function Header() {
   const { signOut, user } = useAuth();
@@ -23,7 +24,11 @@ export function Header() {
           </Text>
 
           <TouchableOpacity onPress={() => signOut()}>
-            <AntDesign name="poweroff" size={30} />
+            <AntDesign
+              name="poweroff"
+              size={30}
+              color={theme.colors.orange[10]}
+            />
           </TouchableOpacity>
         </HStack>
       </Box>

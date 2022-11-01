@@ -21,6 +21,7 @@ import * as Linking from "expo-linking";
 import { IPropsEquipe, IProsEster } from "../dtos";
 import { ObsParcial } from "./ObsParcial";
 import { useAuth } from "../hooks/AuthContext";
+import { ObsCancelada } from "./ObsCancelada";
 
 interface Props {
   estera: IProsEster;
@@ -46,6 +47,8 @@ export function ModalD({
   const w = Dimensions.get("window").width;
   const { user } = useAuth();
   const [modaObs, setModalObs] = useState(false);
+  const [modaObsCan, setModalObsCan] = useState(false);
+  const [modaObsExc, setModalObsExc] = useState(false);
 
   const [nota, setNota] = useState<IProsEster>(estera);
 
@@ -67,6 +70,7 @@ export function ModalD({
 
   const upObs = useCallback(() => {
     setModalObs(false);
+    setModalObsCan(false);
     closedModal();
   }, [closedModal]);
 
@@ -145,13 +149,23 @@ export function ModalD({
       .then((h) => closedModal());
   }, [closedModal, estera, nota]);
 
+  const map = `https://www.google.com/maps/search/?api=1&query=${estera.Lati}%2C${estera.Long}`;
+  console.log(estera.Lati, estera.Long);
+
   return (
-    <Box flex="1" w="100%" alignSelf="center" p="10" bg="dark.800">
+    <Box flex="1" w="100%" alignSelf="center" pb="5" px="5" bg="dark.800">
       <ObsParcial
         equipe={estera.EQUIPE}
         pres={upObs}
         id={estera.id}
         open={modaObs}
+      />
+
+      <ObsCancelada
+        equipe={estera.EQUIPE}
+        pres={upObs}
+        id={estera.id}
+        open={modaObsCan}
       />
 
       <HStack justifyContent="space-between">
@@ -183,9 +197,11 @@ export function ModalD({
           </TouchableOpacity>
         )}
       </HStack>
+
       <Text mt="5" mb="3" bold fontSize={20}>
         NOTA: {estera.Nota}
       </Text>
+
       <ScrollView>
         <VStack alignSelf="flex-start">
           <Box p="2" bg="dark.700">
@@ -200,7 +216,16 @@ export function ModalD({
                 {nota && (
                   <Box>
                     {nota.EQUIPE.map((h) => (
-                      <Text key={h.equipe}>{h.equipe}</Text>
+                      <HStack space={4}>
+                        <Text key={h.equipe}>{h.equipe}</Text>
+                        {situation !== "estera" && (
+                          <Text>
+                            {h.mobilidade === true
+                              ? "movilidade: Sim"
+                              : "movilidade: Não"}
+                          </Text>
+                        )}
+                      </HStack>
                     ))}
                   </Box>
                 )}
@@ -208,15 +233,14 @@ export function ModalD({
             )}
 
             <Box bg="yellow.500">
-              <Text>Observações: {nota ? nota.OBSERVACAO : ""}</Text>
+              <Text bold>Observações: </Text>
+              <Text>{nota ? nota.OBSERVACAO : ""}</Text>
             </Box>
           </Box>
           <Box mt="5">
             <Button
               onPress={() => {
-                Linking.openURL(
-                  `http://maps.google.com/?ie=UTF8&hq=&ll=${estera.Long},${estera.Lati}`
-                );
+                Linking.openURL(map);
               }}
             >
               LOCALIZAÇÃO
@@ -274,16 +298,18 @@ export function ModalD({
           Retirar da estera
         </Button>
       )}
+
       {estera.situation === "processo" && (
         <HStack justifyContent="space-between">
           <Button bg="green.600" onPress={nt_finalizada} mt="10">
             100%
           </Button>
+
           <Button bg="yellow.300" onPress={() => setModalObs(true)} mt="10">
             PARCIAL
           </Button>
 
-          <Button bg="red.600" onPress={nt_cancelada} mt="10">
+          <Button bg="red.600" onPress={() => setModalObsCan(true)} mt="10">
             NT-CANCELADA
           </Button>
         </HStack>

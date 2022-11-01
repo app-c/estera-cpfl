@@ -12,6 +12,7 @@ import { IProsEster } from "../dtos";
 import { useAuth } from "../hooks/AuthContext";
 import { Resumo } from "../components/Resumo";
 import { categoria } from "../utilis/categoria";
+import { Header } from "../components/header";
 
 interface PropsPip {
   nota: string
@@ -191,7 +192,11 @@ export function Grafico() {
   }, [showModeB])
 
   return (
+    <>
+    <Header />
+    
     <Box p='5' bg='dark.100' >
+
 
       <HStack mb='10' mt='5' space={10} >
         <TouchableOpacity onPress={showDatepicker} >
@@ -242,5 +247,6 @@ export function Grafico() {
       </Center>
 
     </Box>
+    </>
   );
 }

@@ -23,7 +23,7 @@ interface Props {
   equipe: IPropsEquipe[];
 }
 
-export function ObsParcial({ open, id, pres, equipe }: Props) {
+export function ObsCancelada({ open, id, pres, equipe }: Props) {
   const [obsP, setObsP] = useState("");
   const [porcent, setPorcent] = useState(0);
   const [qntEqp, setQntEqp] = React.useState(0);
@@ -31,7 +31,7 @@ export function ObsParcial({ open, id, pres, equipe }: Props) {
   const [tempo, setTempo] = React.useState("");
 
   const submit = useCallback(() => {
-    if (obsP === "" || porcent === 0 || qntEqp === 0 || tempo === "") {
+    if (obsP === "" || qntEqp === 0 || tempo === "") {
       return Alert.alert("Informaçoes são obrigatórias");
     }
     fire()
@@ -40,7 +40,7 @@ export function ObsParcial({ open, id, pres, equipe }: Props) {
       .update({
         OBSERVACAO: `${obsP} ${"\n"} Quantidade necessária de equipe para finalizar a obra: ${qntEqp} ${"\n"} Quantidade de tempo para finalizar o obra: ${tempo} Hs`,
         PORCENTUAL: porcent / 100,
-        situation: "parcial",
+        situation: "cancelada",
         EQUIPE: eqp,
       })
       .finally(() => {
@@ -89,6 +89,7 @@ export function ObsParcial({ open, id, pres, equipe }: Props) {
               onChangeText={(h) => setPorcent(Number(h))}
               w="100"
               h="10"
+              value={porcent}
             />
 
             <Text fontSize={26}> %</Text>

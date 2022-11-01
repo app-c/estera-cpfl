@@ -491,36 +491,38 @@ export function Home() {
           )}
 
           <ScrollView contentContainerStyle={{ paddingBottom: 50 }}>
-            <Box mt="5">
-              <HStack alignItems="center" space="4">
-                <Text color="dark.10" bold>
-                  ESTERA DE PROCESSOS
-                </Text>
-              </HStack>
+            {user.type !== "supervisor" && (
+              <Box mt="5">
+                <HStack alignItems="center" space="4">
+                  <Text color="dark.10" bold>
+                    Esteira: Processos
+                  </Text>
+                </HStack>
 
-              <FlatList
-                horizontal
-                data={nt.estera}
-                keyExtractor={(h) => h.Nota}
-                renderItem={({ item: h }) => (
-                  <Cards
-                    title={h.Nota}
-                    value={h.price}
-                    supervisor={h.SUPERVISOR}
-                    equipe={h.EQUIPE}
-                    color="dark.100"
-                    showModal={() => handleShowModal(h)}
-                    situation={h.situation}
-                  />
-                )}
-              />
-            </Box>
+                <FlatList
+                  horizontal
+                  data={nt.estera}
+                  keyExtractor={(h) => h.Nota}
+                  renderItem={({ item: h }) => (
+                    <Cards
+                      title={h.Nota}
+                      value={h.price}
+                      supervisor={h.SUPERVISOR}
+                      equipe={h.EQUIPE}
+                      color="dark.100"
+                      showModal={() => handleShowModal(h)}
+                      situation={h.situation}
+                    />
+                  )}
+                />
+              </Box>
+            )}
 
             {/*  NOTA EM PROCESSO */}
             <Box mt="10">
               <HStack alignItems="center" space="4">
                 <Text bold fontSize={16} color="dark.10">
-                  ESTERA DO SUPERVISOR
+                  Esteira: Encarregados
                 </Text>
               </HStack>
               <FlatList
@@ -546,7 +548,7 @@ export function Home() {
             <Box mt="10">
               <HStack alignItems="center" space="4">
                 <Text bold fontSize={16} color="dark.10">
-                  NT FINALIZADA
+                  Notas finalizadas
                 </Text>
               </HStack>
               <FlatList
@@ -572,7 +574,7 @@ export function Home() {
             <Box mt="10">
               <HStack alignItems="center" space="4">
                 <Text bold color="dark.10">
-                  NT-PARCIAL
+                  Notas parciais
                 </Text>
               </HStack>
               <FlatList
@@ -597,7 +599,7 @@ export function Home() {
             <Box mt="10">
               <HStack alignItems="center" space="4">
                 <Text bold color="dark.10">
-                  NT-CANCELADA
+                  Notas canceladas
                 </Text>
               </HStack>
               <FlatList
@@ -608,7 +610,7 @@ export function Home() {
                   <Cards
                     title={h.Nota}
                     value={h.price}
-                    showModal={() => setShowModalId(true)}
+                    showModal={() => handleShowModal(h)}
                     color="red.400"
                   />
                 )}
