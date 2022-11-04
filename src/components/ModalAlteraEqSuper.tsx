@@ -65,6 +65,22 @@ export function ModalAlteraEquiSuper({
         const fil = rs.filter((p) => p.type === "supervisor");
         setUsers(fil);
       });
+
+    fire()
+      .collection("notas")
+      .onSnapshot((h) => {
+        const rs = h.docs.map((p) => {
+          return p.data() as IProsEster;
+        });
+
+        const eq = rs.map((p) => {
+          return p.EQUIPE;
+        });
+
+        console.log(eq);
+
+        setEquipe(eq);
+      });
   }, []);
 
   return (

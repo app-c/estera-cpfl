@@ -105,7 +105,7 @@ export function ModalD({
     };
 
     fire()
-      .collection("nt-reprogramada")
+      .collection("nt-parcial")
       .add(dt)
       .then(() => {
         fire()
@@ -149,8 +149,7 @@ export function ModalD({
       .then((h) => closedModal());
   }, [closedModal, estera, nota]);
 
-  const map = `https://www.google.com/maps/search/?api=1&query=${estera.Lati}%2C${estera.Long}`;
-  console.log(estera.Lati, estera.Long);
+  const map = `https://www.google.com/maps/search/?api=1&query=${estera.Lati}%2C$0}`;
 
   return (
     <Box flex="1" w="100%" alignSelf="center" pb="5" px="5" bg="dark.800">
@@ -204,8 +203,8 @@ export function ModalD({
 
       <ScrollView>
         <VStack alignSelf="flex-start">
-          <Box p="2" bg="dark.700">
-            <Text>Texto_das_medidas: {estera.Texto_das_medidas}</Text>
+          <Box w="100%" p="2" bg="dark.700">
+            <Text>Texto_das_medidas: {estera.TLE}</Text>
             <Text>Dt_programação: {estera.Dt_programação}</Text>
             <Text>MO: {estera.MO}</Text>
             {nota && (
@@ -238,15 +237,15 @@ export function ModalD({
             </Box>
           </Box>
           <Box mt="5">
-            <Button
+            {/* <Button
               onPress={() => {
                 Linking.openURL(map);
               }}
             >
               LOCALIZAÇÃO
-            </Button>
+            </Button> */}
           </Box>
-          <Text>Tipo: {estera.Tipo}</Text>
+          {/* <Text>Tipo: {estera.Tipo}</Text>
           <Text>Descricao_da_nota: {estera.Descricao_da_nota}</Text>
           <Text>TAM: {estera.TAM}</Text>
           <Text>Depart: {estera.Depart}</Text>
@@ -275,7 +274,7 @@ export function ModalD({
           <Text>Mês_empreita: {estera.Mês_empreita}</Text>
           <Text>Ano_empreita: {estera.Ano_empreita}</Text>
           <Text>Km: {estera.Km}</Text>
-          <Text>CAPEX: {estera.CAPEX}</Text>
+          <Text>CAPEX: {estera.CAPEX}</Text> */}
         </VStack>
       </ScrollView>
 

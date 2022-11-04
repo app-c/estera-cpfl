@@ -29,7 +29,7 @@ import { CardTotal } from "../components/cardTotal";
 import { Cards } from "../components/cards";
 import { ModalD } from "../components/ModalD";
 import { IUser, useAuth } from "../hooks/AuthContext";
-import { estera as es } from "../utilis/estera";
+import { notas as es } from "../utilis/estera";
 import { IPropsEquipe, IProsEster } from "../dtos";
 import { FUNCIONARIOS } from "../utilis/funcionarios";
 import { NotasContext, NotasProvider } from "../context/ListNotas";
@@ -193,54 +193,26 @@ export function Home() {
       });
     }
 
-    const nota = filterWihDate.length > 0 ? filterWihDate : res;
+    const nota = filterWihDate.length > 0 ? filterWihDate : [];
     const notaCompare = [];
 
     nota.forEach((h) => {
-      ntReprogramada.forEach((r) => {
-        if (r.Nota !== h.Nota) {
-          notaCompare.push(h);
-        }
-      });
-
-      ntCancelada.forEach((r) => {
-        if (r.Nota !== h.Nota) {
-          notaCompare.push(h);
-        }
-      });
-    });
-
-    nota.forEach((h) => {
-      ntReprogramada.forEach((r) => {
-        if (r.Nota === h.Nota) {
-          const dt = {
-            ...r,
-            id: h.id,
-            Dt_programação: h.Dt_programação,
-          };
-          notaCompare.push(dt);
-        }
-      });
-
-      ntCancelada.forEach((r) => {
-        if (r.Nota === h.Nota) {
-          const dt = {
-            ...r,
-            id: h.id,
-            Dt_programação: h.Dt_programação,
-          };
-          notaCompare.push(dt);
-        }
-      });
+      const fic = ntCancelada.find((s) => s.Nota === h.Nota);
+      const fin = ntReprogramada.find((s) => s.Nota === h.Nota);
+      if (!fin || !fic) {
+        notaCompare.push(h);
+      } else {
+        notaCompare.push(fin);
+      }
     });
 
     const notaFilter = search
-      ? notaCompare.filter((h) => {
+      ? nota.filter((h) => {
           if (h.Nota.includes(search)) {
             return h;
           }
         })
-      : notaCompare;
+      : nota;
 
     const nt_estera = notaFilter.filter(
       (h) =>
@@ -274,7 +246,7 @@ export function Home() {
       parcial: nt_parcial,
       cancelada: nt_cancelada,
     };
-  }, [estera, date, dateB, search, user, ntReprogramada, ntCancelada]);
+  }, [estera, date, dateB, search, user]);
 
   const submit = React.useCallback(() => {
     for (let i = 0; i < es.length; i += 1) {
