@@ -1,23 +1,14 @@
-import React, { useCallback, useContext, useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   Box,
   Button,
-  Center,
   CheckIcon,
   FormControl,
-  IInputProps,
-  Input,
   Select,
   Text,
   WarningOutlineIcon,
 } from "native-base";
-import {
-  Modal,
-  Dimensions,
-  Alert,
-  ActivityIndicator,
-  TouchableOpacity,
-} from "react-native";
+import { Dimensions, ActivityIndicator, TouchableOpacity } from "react-native";
 import fire from "@react-native-firebase/firestore";
 import { Feather } from "expo-vector-icons";
 import { IPropsEquipe, IProsEster, IProsFuncionarios } from "../dtos";
@@ -26,9 +17,7 @@ import { NotasContext } from "../context/ListNotas";
 import { theme } from "../global/theme";
 
 interface Props {
-  data: IProsEster;
   selectEquipe: IPropsEquipe[];
-  pres: () => void;
   openModalEquipe: () => void;
   closed: () => void;
   updateEquipe: () => void;
@@ -37,9 +26,7 @@ interface Props {
 }
 
 export function ModalAlteraEquiSuper({
-  data,
   selectEquipe,
-  pres,
   openModalEquipe,
   closed,
   updateEquipe,
@@ -76,8 +63,6 @@ export function ModalAlteraEquiSuper({
         const eq = rs.map((p) => {
           return p.EQUIPE;
         });
-
-        console.log(eq);
 
         setEquipe(eq);
       });
@@ -134,9 +119,11 @@ export function ModalAlteraEquiSuper({
               Selecione a equipe
             </Text>
             {selectEquipe.map((h) => (
-              <Text key={h.id} color="white.50" bold>
-                {h.equipe}
-              </Text>
+              <Box key={h.equipe}>
+                <Text color="white.50" bold>
+                  {h.equipe}
+                </Text>
+              </Box>
             ))}
           </Box>
         </TouchableOpacity>

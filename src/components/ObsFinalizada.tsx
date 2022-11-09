@@ -23,34 +23,27 @@ interface Props {
   equipe: IPropsEquipe[];
 }
 
-export function ObsCancelada({ open, id, pres, equipe }: Props) {
+export function ObsFinalizada({ open, id, pres, equipe }: Props) {
   const w = Dimensions.get("window").width;
   const [obsP, setObsP] = useState("");
   const [porcent, setPorcent] = useState(0);
-  const [gd, setGd] = React.useState(0);
-  const [lm, setLm] = React.useState(0);
-  const [lv, setLv] = React.useState(0);
-
+  const [qntEqp, setQntEqp] = React.useState(0);
   const [eqp, setEqp] = React.useState<IPropsEquipe[]>(equipe);
   const [tempo, setTempo] = React.useState("");
 
   const submit = useCallback(() => {
-    if (obsP === "" || tempo === "") {
-      return Alert.alert("Informaçoes são obrigatórias");
-    }
     fire()
       .collection("notas")
       .doc(id)
       .update({
-        OBSERVACAO: `${obsP} ${"\n"} Quantidade necessária de equipe para finalizar a obra: ${"\n"}GD: ${gd} ${"\n"}LM: ${lm} ${"\n"}  ${"\n"} ${"\n"} Quantidade de tempo para finalizar o obra: ${tempo} Hs`,
-        PORCENTUAL: porcent / 100,
-        situation: "cancelada",
+        OBSERVACAO: obsP,
+        situation: "executada",
         EQUIPE: eqp,
       })
       .finally(() => {
         pres();
       });
-  }, [eqp, gd, id, lm, obsP, porcent, pres, tempo]);
+  }, [eqp, id, obsP, pres]);
 
   const selectEquipeMobilidade = React.useCallback(
     (gd: IPropsEquipe) => {
@@ -83,64 +76,8 @@ export function ObsCancelada({ open, id, pres, equipe }: Props) {
   return (
     <Modal isOpen={open}>
       <ScrollView>
-        <Box bg="dark.900" w="100%" p="10">
+        <Box bg="dark.900" w={w} p="10">
           <TextArea onChangeText={setObsP} h="200" />
-
-          <Text mt="10">Obra concluida</Text>
-          <HStack>
-            <Input
-              keyboardType="numeric"
-              onChangeText={(h) => setPorcent(Number(h))}
-              w="100"
-              h="10"
-              value={porcent}
-            />
-
-            <Text fontSize={26}> %</Text>
-          </HStack>
-
-          <Text mt="5">
-            Quantidade de Equipe necessária para finalizar a obra:
-          </Text>
-          <HStack mt="5" alignItems="center" space={3}>
-            <HStack space={3}>
-              <Text>GD</Text>
-              <Input
-                keyboardType="numeric"
-                onChangeText={(h) => setGd(Number(h))}
-                w="60"
-                h={w * 0.08}
-              />
-            </HStack>
-
-            <HStack space={3}>
-              <Text>LM</Text>
-              <Input
-                keyboardType="numeric"
-                onChangeText={(h) => setLm(Number(h))}
-                w="60"
-                h={w * 0.08}
-              />
-            </HStack>
-
-            <HStack space={3}>
-              <Text>LV</Text>
-              <Input
-                keyboardType="numeric"
-                onChangeText={(h) => setLv(Number(h))}
-                w="60"
-                h={w * 0.08}
-              />
-            </HStack>
-          </HStack>
-
-          <Text mt="5">Quantidade de tempo para finalizar a obra</Text>
-          <Input
-            keyboardType="numeric"
-            onChangeText={(h) => setTempo(h)}
-            w="100"
-            h="10"
-          />
 
           <Text mt="5">Equipes fizeram mobilidade?</Text>
           <Box mt="2">

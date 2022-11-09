@@ -6,6 +6,7 @@ import { Gestao } from "../pages/Gestao";
 import { Stack } from "./Stack";
 import { C4 } from "../pages/Gestor/C4";
 import { Emergencia } from "../pages/Gestor/Emergencia";
+import { Graficos } from "../pages/Gestor/Graficos";
 
 const { Navigator, Screen } = createBottomTabNavigator();
 
@@ -51,6 +52,16 @@ export function GestaoRoutes() {
         }}
         component={Emergencia}
         name="EMERGENCIA"
+      />
+
+      <Screen
+        options={{
+          tabBarIcon: ({ size, color }) => (
+            <Entypo name="flash" size={size} color={color} />
+          ),
+        }}
+        component={Graficos}
+        name="GRAFICOS"
       />
     </Navigator>
   );

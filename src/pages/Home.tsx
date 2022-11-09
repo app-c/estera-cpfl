@@ -71,7 +71,6 @@ export function Home() {
   // TODO MODAL EQUIPE
   const [showModalEquipe, setShowModalEquipe] = React.useState(false);
   const [selectEquipe, setSelectEquipe] = React.useState<IPropsEquipe[]>([]);
-  const [users, setUsers] = React.useState<IUser[]>([]);
 
   const submitUpdateEstera = useCallback(() => {
     fire()
@@ -79,7 +78,7 @@ export function Home() {
       .doc(info.id)
       .update({
         SUPERVISOR: supervisor,
-        EQUIPE: selectEquipe,
+        EQUIPE: selectEquipe.length > 0 ? selectEquipe : info.EQUIPE,
       })
       .then(() => {
         Alert.alert("Nota atualizada");
@@ -196,23 +195,46 @@ export function Home() {
     const nota = filterWihDate.length > 0 ? filterWihDate : [];
     const notaCompare = [];
 
-    nota.forEach((h) => {
-      const fic = ntCancelada.find((s) => s.Nota === h.Nota);
-      const fin = ntReprogramada.find((s) => s.Nota === h.Nota);
-      if (!fin || !fic) {
-        notaCompare.push(h);
+    nota.forEach((est: IProsEster) => {
+      const findP = ntReprogramada.find((h) => h.Nota === est.Nota);
+      const findC = ntCancelada.find((h) => h.Nota === est.Nota);
+
+      if (findP) {
+        const dados = {
+          ...est,
+          Dt_programação: est.Dt_programação,
+          EQUIPE: findP.EQUIPE,
+          situation: "nt_parcial",
+          OBSERVACAO: findP.OBSERVACAO,
+        };
+        notaCompare.push(dados);
+        fire().collection("notas").doc(est.id).update(dados);
+        fire().collection("nt-parcial").doc(findP.id).delete();
       } else {
-        notaCompare.push(fin);
+        notaCompare.push(est);
+      }
+
+      if (findC) {
+        const dados = {
+          ...est,
+          Dt_programação: est.Dt_programação,
+          EQUIPE: findP.EQUIPE,
+          situation: "nt_parcial",
+          OBSERVACAO: findP.OBSERVACAO,
+        };
+        notaCompare.push(dados);
+        fire().collection("notas").doc(est.id).update(dados);
+        fire().collection("nt-cancelada").doc(findP.id).delete();
       }
     });
 
     const notaFilter = search
-      ? nota.filter((h) => {
+      ? notaCompare.filter((h) => {
           if (h.Nota.includes(search)) {
             return h;
           }
         })
-      : nota;
+      : notaCompare;
 
     const nt_estera = notaFilter.filter(
       (h) =>
@@ -246,22 +268,26 @@ export function Home() {
       parcial: nt_parcial,
       cancelada: nt_cancelada,
     };
-  }, [estera, date, dateB, search, user]);
+  }, [estera, date, dateB, search, user, ntCancelada, ntReprogramada]);
 
   const submit = React.useCallback(() => {
-    for (let i = 0; i < es.length; i += 1) {
-      const dados = {
-        ...es[i],
-        EQUIPE: [],
-        situation: "estera",
-      };
-      fire()
-        .collection("notas")
-        .add({
-          ...dados,
-        })
-        .then((h) => console.log("ok"));
-    }
+    fire()
+      .collection("nota-teste")
+      .get()
+      .then((h) => {
+        const rs = h.docs.map((p) => p.data());
+
+        const dados = {
+          Nota: 300000718043,
+          Dt_programação: "08/11/2022",
+          situation: "estera",
+          MO: 17042,
+          EQUIPE: [],
+          OBSERVACAO: "",
+        };
+
+        fire().collection("notas").add(dados);
+      });
   }, []);
 
   const total = React.useMemo(() => {
@@ -285,7 +311,41 @@ export function Home() {
       return (ac += item.MO);
     }, 0);
 
-    const subTotal = tl + exe + tp;
+    const NtParcial = [];
+    const NtCancelada = [];
+
+    if (date.getTime() <= dateB.getTime()) {
+      const ruslt = eachDayOfInterval({
+        start: date,
+        end: dateB,
+      });
+
+      ruslt.forEach((dt) => {
+        const fomatDt = format(dt, "dd/MM/yyyy");
+        ntReprogramada.forEach((item) => {
+          if (fomatDt === item.Dt_programação) {
+            NtParcial.push(item);
+          }
+        });
+
+        ntCancelada.forEach((item) => {
+          if (fomatDt === item.Dt_programação) {
+            NtCancelada.push(item);
+          }
+        });
+      });
+    }
+
+    const nt_parcial = NtParcial.reduce((ac, it) => {
+      return (ac += Number(it.MO));
+    }, 0);
+
+    const nt_cancelada = NtParcial.reduce((ac, it) => {
+      return (ac += Number(it.MO));
+    }, 0);
+
+    const subTotal =
+      tl + exe + tp + parcia + cancelad + nt_parcial + nt_cancelada;
 
     const total = subTotal.toLocaleString("pt-BR", {
       style: "currency",
@@ -356,7 +416,7 @@ export function Home() {
               <ScrollView>
                 {GDS.map((h) => (
                   <TouchableOpacity
-                    key={h.id}
+                    key={h.equipe}
                     onPress={() => submitSelectEquipe(h)}
                   >
                     <Center mt="3" borderRadius="5" h="10" bg="white.100">
@@ -582,6 +642,8 @@ export function Home() {
                   <Cards
                     title={h.Nota}
                     value={h.price}
+                    equipe={h.EQUIPE}
+                    supervisor={h.SUPERVISOR}
                     showModal={() => handleShowModal(h)}
                     color="red.400"
                   />

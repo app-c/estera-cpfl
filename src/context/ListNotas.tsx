@@ -2,10 +2,18 @@
 /* eslint-disable array-callback-return */
 import React, { createContext } from "react";
 import fire from "@react-native-firebase/firestore";
+import { eachDayOfInterval, format } from "date-fns";
 import { IC4, IFaturamento, IProsEster, IProsFuncionarios } from "../dtos";
 
 interface ProviderProps {
   children: React.ReactNode;
+}
+
+interface ProsNotasData {
+  par: IProsEster[];
+  pla: IProsEster[];
+  exe: IProsEster[];
+  canc: IProsEster[];
 }
 
 interface PropsContext {
@@ -17,6 +25,8 @@ interface PropsContext {
   c4: IC4[];
   emergencia: IC4[];
   faturamento: IFaturamento[];
+  notasByDate: (date: Date, dateB: Date) => void;
+  notasPorData: ProsNotasData;
 }
 
 export const NotasContext = createContext({} as PropsContext);
@@ -29,6 +39,7 @@ export function NotasProvider({ children }: ProviderProps) {
   const [c4, setC4] = React.useState<IC4[]>([]);
   const [emergencia, setEmergencia] = React.useState<IC4[]>([]);
   const [faturamento, setFaturamaneto] = React.useState<IFaturamento[]>([]);
+  const [notasPorData, setNotasPorData] = React.useState({} as ProsNotasData);
 
   React.useEffect(() => {
     fire()
@@ -163,6 +174,7 @@ export function NotasProvider({ children }: ProviderProps) {
     const MONTADOR = [];
     const RESERVA = [];
     const VIABILIDADE = [];
+
     const equipe = equipes.sort((a, b) => {
       if (b.equipe > a.equipe) {
         return -1;
@@ -292,12 +304,70 @@ export function NotasProvider({ children }: ProviderProps) {
         equipe: h.equipe,
         mobilidade: false,
         dados: h.dados,
+        faturamento: 0,
       };
       gds.push(dt);
     });
 
     return gds;
   }, [equipes]);
+
+  const notasByDate = React.useCallback(
+    (a: Date, b: Date) => {
+      const parcial = [];
+      const executada = [];
+      const planejada = [];
+      const cancelada = [];
+      if (a.getTime() <= b.getTime()) {
+        const ruslt = eachDayOfInterval({
+          start: a,
+          end: b,
+        });
+        ruslt.forEach((dt) => {
+          const fomatDt = format(dt, "dd/MM/yyyy");
+
+          estera.forEach((item) => {
+            if (item.Dt_programação === fomatDt) {
+              planejada.push(item);
+            }
+          });
+
+          estera.forEach((item) => {
+            if (
+              item.Dt_programação === fomatDt &&
+              item.situation === "executada"
+            ) {
+              executada.push(item);
+            }
+          });
+
+          ntReprogramada.forEach((item) => {
+            if (fomatDt === item.Dt_programação) {
+              parcial.push(item);
+              planejada.push(item);
+            }
+          });
+
+          ntCancelada.forEach((item) => {
+            if (fomatDt === item.Dt_programação) {
+              cancelada.push(item);
+              planejada.push(item);
+            }
+          });
+        });
+      }
+
+      const dados = {
+        par: parcial,
+        pla: planejada,
+        exe: executada,
+        canc: cancelada,
+      };
+
+      setNotasPorData(dados);
+    },
+    [estera, ntCancelada, ntReprogramada]
+  );
 
   return (
     <NotasContext.Provider
@@ -310,6 +380,8 @@ export function NotasProvider({ children }: ProviderProps) {
         c4,
         emergencia,
         faturamento,
+        notasByDate,
+        notasPorData,
       }}
     >
       {children}

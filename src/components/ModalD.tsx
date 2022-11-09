@@ -22,6 +22,7 @@ import { IPropsEquipe, IProsEster } from "../dtos";
 import { ObsParcial } from "./ObsParcial";
 import { useAuth } from "../hooks/AuthContext";
 import { ObsCancelada } from "./ObsCancelada";
+import { ObsFinalizada } from "./ObsFinalizada";
 
 interface Props {
   estera: IProsEster;
@@ -52,7 +53,7 @@ export function ModalD({
 
   const [nota, setNota] = useState<IProsEster>(estera);
 
-  useEffect(() => {
+  const upNota = React.useCallback(() => {
     fire()
       .collection("notas")
       .onSnapshot((h) => {
@@ -71,8 +72,10 @@ export function ModalD({
   const upObs = useCallback(() => {
     setModalObs(false);
     setModalObsCan(false);
+    setModalObsExc(false);
     closedModal();
-  }, [closedModal]);
+    upNota();
+  }, [closedModal, upNota]);
 
   const nt_finalizada = useCallback(() => {
     fire()
@@ -80,18 +83,6 @@ export function ModalD({
       .doc(estera.id)
       .update({
         situation: "executada",
-      })
-      .then(() => {
-        closedModal();
-      });
-  }, [closedModal, estera]);
-
-  const nt_cancelada = useCallback(() => {
-    fire()
-      .collection("notas")
-      .doc(estera.id)
-      .update({
-        situation: "cancelada",
       })
       .then(() => {
         closedModal();
@@ -167,17 +158,26 @@ export function ModalD({
         open={modaObsCan}
       />
 
+      <ObsFinalizada
+        equipe={estera.EQUIPE}
+        pres={upObs}
+        id={estera.id}
+        open={modaObsExc}
+      />
+
       <HStack justifyContent="space-between">
         <Button onPress={closedModal} w={w * 0.2}>
           fechar
         </Button>
 
         {situation === "estera" && (
-          <TouchableOpacity onPress={openUpdateEquipe}>
-            <Box bg="green.400" borderRadius={10} px="10" py="3">
-              <Text bold>Atualizar</Text>
-            </Box>
-          </TouchableOpacity>
+          <HStack>
+            <TouchableOpacity onPress={openUpdateEquipe}>
+              <Box bg="green.400" borderRadius={10} px="10" py="3">
+                <Text bold>Atualizar</Text>
+              </Box>
+            </TouchableOpacity>
+          </HStack>
         )}
 
         {situation === "nt_parcial" && (
@@ -286,10 +286,18 @@ export function ModalD({
         </Center>
       )}
 
-      {estera.situation === "parcial" && user.type !== "supervisor" && (
-        <Button onPress={reprogramar} mt="5">
-          REPROGRAMAR
-        </Button>
+      {estera.situation === "parcial" && (
+        <HStack justifyContent="space-between">
+          <Button bg="green.10" onPress={reprogramar} mt="5">
+            FINALIZAR
+          </Button>
+
+          {user.type === "adm" && (
+            <Button onPress={reprogramar} mt="5">
+              REPROGRAMAR
+            </Button>
+          )}
+        </HStack>
       )}
 
       {estera.situation === "cancelada" && user.type !== "supervisor" && (
@@ -300,7 +308,7 @@ export function ModalD({
 
       {estera.situation === "processo" && (
         <HStack justifyContent="space-between">
-          <Button bg="green.600" onPress={nt_finalizada} mt="10">
+          <Button bg="green.600" onPress={() => setModalObsExc(true)} mt="10">
             100%
           </Button>
 

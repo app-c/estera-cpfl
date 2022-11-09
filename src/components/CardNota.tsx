@@ -8,9 +8,11 @@ interface Props {
   nome: string;
   presObs: () => void;
   presTruck: () => void;
+  valor: string;
+  data: string;
 }
 
-export function Card({ nota, nome, presObs, presTruck }: Props) {
+export function Card({ nota, nome, presObs, presTruck, valor, data }: Props) {
   return (
     <Box
       mt="1.5"
@@ -29,7 +31,7 @@ export function Card({ nota, nome, presObs, presTruck }: Props) {
         <HStack justifyContent="space-around">
           <TouchableOpacity onPress={presTruck}>
             <Center>
-              <Image size="20" source={truck} />
+              <Image alt="image" size="20" source={truck} />
               <Text fontSize={16} mt="2" bold>
                 EQUIPES
               </Text>
@@ -41,6 +43,9 @@ export function Card({ nota, nome, presObs, presTruck }: Props) {
             <Text bold fontSize={16}>
               {nome}
             </Text>
+            <Text>{data}</Text>
+
+            <Text top="3">{valor}</Text>
 
             <TouchableOpacity onPress={presObs}>
               <Center borderRadius={5} mt="10" bg="blue.10">

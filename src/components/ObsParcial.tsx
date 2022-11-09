@@ -11,7 +11,7 @@ import {
   ScrollView,
 } from "native-base";
 import React, { useCallback, useState } from "react";
-import { Alert, TouchableOpacity } from "react-native";
+import { Alert, Dimensions, TouchableOpacity } from "react-native";
 import fire from "@react-native-firebase/firestore";
 import { IPropsEquipe } from "../dtos";
 import { Slect } from "./select";
@@ -24,21 +24,25 @@ interface Props {
 }
 
 export function ObsParcial({ open, id, pres, equipe }: Props) {
+  const w = Dimensions.get("window").width;
   const [obsP, setObsP] = useState("");
   const [porcent, setPorcent] = useState(0);
   const [qntEqp, setQntEqp] = React.useState(0);
   const [eqp, setEqp] = React.useState<IPropsEquipe[]>(equipe);
   const [tempo, setTempo] = React.useState("");
+  const [gd, setGd] = React.useState(0);
+  const [lv, setLv] = React.useState(0);
+  const [lm, setLm] = React.useState(0);
 
   const submit = useCallback(() => {
-    if (obsP === "" || porcent === 0 || qntEqp === 0 || tempo === "") {
+    if (obsP === "" || porcent === 0 || tempo === "") {
       return Alert.alert("Informaçoes são obrigatórias");
     }
     fire()
       .collection("notas")
       .doc(id)
       .update({
-        OBSERVACAO: `${obsP} ${"\n"} Quantidade necessária de equipe para finalizar a obra: ${qntEqp} ${"\n"} Quantidade de tempo para finalizar o obra: ${tempo} Hs`,
+        OBSERVACAO: `${obsP} ${"\n"} Quantidade necessária de equipe para finalizar a obra: ${"\n"}GD: ${gd} ${"\n"}LM: ${lm} ${"\n"} ${lv}  ${"\n"} Quantidade de tempo para finalizar o obra: ${tempo} Hs`,
         PORCENTUAL: porcent / 100,
         situation: "parcial",
         EQUIPE: eqp,
@@ -46,7 +50,7 @@ export function ObsParcial({ open, id, pres, equipe }: Props) {
       .finally(() => {
         pres();
       });
-  }, [eqp, id, obsP, porcent, pres, qntEqp, tempo]);
+  }, [eqp, gd, id, lm, lv, obsP, porcent, pres, tempo]);
 
   const selectEquipeMobilidade = React.useCallback(
     (gd: IPropsEquipe) => {
@@ -97,12 +101,47 @@ export function ObsParcial({ open, id, pres, equipe }: Props) {
           <Text mt="5">
             Quantidade de Equipe necessária para finalizar a obra:
           </Text>
-          <Input
-            keyboardType="numeric"
-            onChangeText={(h) => setQntEqp(Number(h))}
-            w="100"
-            h="10"
-          />
+
+          <HStack mt="5" alignItems="center" space={3}>
+            <HStack space={3}>
+              <Text>GD</Text>
+              <Input
+                keyboardType="numeric"
+                onChangeText={(h) => setGd(Number(h))}
+                w="60"
+                h={w * 0.07}
+                fontSize="14"
+                padding={0}
+                px="2"
+              />
+            </HStack>
+
+            <HStack space={3}>
+              <Text>LM</Text>
+              <Input
+                keyboardType="numeric"
+                onChangeText={(h) => setLm(Number(h))}
+                w="60"
+                h={w * 0.07}
+                fontSize="14"
+                padding={0}
+                px="2"
+              />
+            </HStack>
+
+            <HStack space={3}>
+              <Text>LV</Text>
+              <Input
+                keyboardType="numeric"
+                onChangeText={(h) => setLv(Number(h))}
+                w="60"
+                h={w * 0.07}
+                fontSize="14"
+                padding={0}
+                px="2"
+              />
+            </HStack>
+          </HStack>
 
           <Text mt="5">Quantidade de tempo para finalizar a obra</Text>
           <Input

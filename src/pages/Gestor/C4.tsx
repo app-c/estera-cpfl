@@ -30,7 +30,6 @@ export function C4() {
   }, []);
 
   const showDatepicker = React.useCallback(() => {
-    console.log("date");
     showMode("date");
   }, [showMode]);
 
@@ -43,7 +42,7 @@ export function C4() {
       .add({
         valor,
         evento,
-        data: date,
+        data: format(new Date(), "dd/MM/yyyy"),
       })
       .then((h) => {
         Alert.alert("EVENTO CRIADO");

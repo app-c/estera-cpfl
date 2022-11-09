@@ -13,7 +13,7 @@ interface PropsParams {
 }
 
 export function Parcial() {
-  const { estera } = useContext(NotasContext);
+  const { ntReprogramada } = useContext(NotasContext);
   const { params } = useRoute();
   const { date, dateB } = params as PropsParams;
 
@@ -22,6 +22,8 @@ export function Parcial() {
 
   const [showModalTruck, setShowModalTruck] = React.useState(false);
   const [showModalInfo, setShowModalInfo] = React.useState(false);
+
+  console.log(date, dateB);
 
   const notas = React.useMemo(() => {
     const filterWihDate = [];
@@ -33,7 +35,7 @@ export function Parcial() {
 
       ruslt.forEach((dt) => {
         const fomatDt = format(dt, "dd/MM/yyyy");
-        estera.forEach((item) => {
+        ntReprogramada.forEach((item) => {
           if (fomatDt === item.Dt_programação) {
             filterWihDate.push(item);
           }
@@ -41,21 +43,27 @@ export function Parcial() {
       });
     }
 
-    const nt = filterWihDate
-      .map((h: IProsEster) => {
-        return {
-          data: h.Dt_programação,
-          valor: h.MO,
-          supervisor: h.SUPERVISOR,
-          equipe: h.EQUIPE,
-          situation: h.situation,
-          obs: h.OBSERVACAO,
-        };
-      })
-      .filter((h) => h.situation === "parcial");
+    const nt = filterWihDate.map((h: IProsEster) => {
+      const valor = Number(h.MO).toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+      });
+
+      return {
+        data: h.Dt_programação,
+        valor,
+        supervisor: h.SUPERVISOR,
+        equipe: h.EQUIPE,
+        situation: h.situation,
+        obs: h.OBSERVACAO,
+        nota: h.Nota,
+      };
+    });
 
     return nt;
-  }, [date, dateB, estera]);
+  }, [date, dateB, ntReprogramada]);
+
+  console.log(notas.length);
 
   const opemModalTruck = React.useCallback((item: IPropsEquipe[]) => {
     setSelectEquipe(item);
@@ -66,8 +74,6 @@ export function Parcial() {
     setInfo(info);
     setShowModalInfo(true);
   }, []);
-
-  console.log(info);
 
   return (
     <Box p="5">
@@ -89,9 +95,11 @@ export function Parcial() {
         renderItem={({ item: h }) => (
           <Card
             nome={h.supervisor}
-            nota={h.valor}
+            nota={Number(h.nota)}
+            data={h.data}
             presObs={() => openModalInfo(h.obs)}
             presTruck={() => opemModalTruck(h.equipe)}
+            valor={h.valor}
           />
         )}
       />

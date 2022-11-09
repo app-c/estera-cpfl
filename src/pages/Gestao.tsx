@@ -13,6 +13,7 @@ import {
   Text,
   WarningOutlineIcon,
 } from "native-base";
+
 import React, { useCallback, useContext, useMemo, useState } from "react";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Alert, Dimensions, Platform, TouchableOpacity } from "react-native";
@@ -41,37 +42,15 @@ interface IProps {
 }
 
 export function Gestao() {
-  const { estera, c4, emergencia, faturamento } = useContext(NotasContext);
+  const { estera, c4, emergencia, faturamento, ntCancelada, ntReprogramada } =
+    useContext(NotasContext);
   const { navigate } = useNavigation();
   const w = Dimensions.get("screen").width / 2;
 
   const [valor, setValor] = React.useState(0);
   const [modalNewFaturamento, setModalNewFaturamento] = React.useState(false);
 
-  const [datePicker, setDatePicker] = React.useState(new Date());
   const [mes, setMes] = React.useState("");
-
-  const [mode, setMode] = useState("date");
-  const [show, setShow] = React.useState(false);
-
-  const onChange = React.useCallback((event, selectedDate) => {
-    const currentDate = selectedDate;
-    setShow(false);
-    setDatePicker(currentDate);
-  }, []);
-
-  const showMode = React.useCallback((currentMode) => {
-    if (Platform.OS === "android") {
-      setShow(true);
-      // for iOS, add a button that closes the picker
-    }
-    setMode(currentMode);
-  }, []);
-
-  const showDatepicker = React.useCallback(() => {
-    console.log("date");
-    showMode("date");
-  }, [showMode]);
 
   function dateN() {
     const dia = addMonths(new Date(), -1);
@@ -102,10 +81,28 @@ export function Gestao() {
 
   const totalEstera = useMemo(() => {
     const filNotas = [];
+    const filParc = [];
+    const filCanc = [];
     const filC4 = [];
     const filEmergencia = [];
 
     const nt = estera.map((h) => {
+      return {
+        valor: h.MO,
+        data: h.Dt_programação,
+        situation: h.situation,
+      };
+    });
+
+    const np = ntReprogramada.map((h) => {
+      return {
+        valor: h.MO,
+        data: h.Dt_programação,
+        situation: h.situation,
+      };
+    });
+
+    const nc = ntCancelada.map((h) => {
       return {
         valor: h.MO,
         data: h.Dt_programação,
@@ -127,11 +124,24 @@ export function Gestao() {
           }
         });
 
+        np.forEach((item) => {
+          if (fomatDt === item.data) {
+            filParc.push(item);
+          }
+        });
+
+        nc.forEach((item) => {
+          if (fomatDt === item.data) {
+            filCanc.push(item);
+          }
+        });
+
         c4.forEach((h) => {
           if (h.data === fomatDt) {
             filC4.push(h);
           }
         });
+        console.log(c4);
 
         emergencia.forEach((h) => {
           if (h.data === fomatDt) {
@@ -142,7 +152,7 @@ export function Gestao() {
     }
 
     const fatFind = faturamento.find((h) => {
-      const db = dateB.getMonth();
+      const db = dateB.getMonth() + 1;
       const [dia, mes, ano] = h.data.split("/").map(Number);
       if (db === mes) {
         return h;
@@ -152,6 +162,8 @@ export function Gestao() {
     const fatuV = fatFind ? fatFind.valor : 0;
 
     const nota = filNotas.length > 0 ? filNotas : [];
+    const parcial = filParc.length > 0 ? filParc : [];
+    const cancelada = filCanc.length > 0 ? filCanc : [];
 
     const testera = nota.reduce((ac, item: IProps) => {
       if (item.situation === "estera") {
@@ -159,6 +171,7 @@ export function Gestao() {
       }
       return ac;
     }, 0);
+
     const texec = nota.reduce((ac, item: IProps) => {
       if (item.situation === "executada") {
         ac += Number(item.valor);
@@ -166,30 +179,31 @@ export function Gestao() {
       return ac;
     }, 0);
 
-    const tparci = nota.reduce((ac, item: IProps) => {
-      if (item.situation === "parcial") {
-        ac += Number(item.valor);
-      }
-      return ac;
+    const tparci = parcial.reduce((ac, item: IProps) => {
+      return (ac += Number(item.valor));
+    }, 0);
+
+    const tcancelada = cancelada.reduce((ac, item: IProps) => {
+      return (ac += Number(item.valor));
     }, 0);
 
     const tlC4 = filC4.reduce((ac, i: IC4) => {
       return (ac += Number(i.valor));
     }, 0);
 
+    console.log(filC4);
+
     const tlEmer = filEmergencia.reduce((ac, i: IC4) => {
       return (ac += Number(i.valor));
     }, 0);
 
-    const tlPlan = testera + texec + tparci;
+    const tlPlan = testera + texec + tparci + tcancelada;
     const tlTotal = texec + tlC4 + tlEmer;
 
     const total = tlTotal.toLocaleString("pt-BR", {
       style: "currency",
       currency: "BRL",
     });
-
-    const nu = 100000;
 
     const fatu = fatuV.toLocaleString("pt-BR", {
       style: "currency",
@@ -232,7 +246,16 @@ export function Gestao() {
       C4,
       Emer,
     };
-  }, [c4, date, dateB, emergencia, estera, faturamento]);
+  }, [
+    c4,
+    date,
+    dateB,
+    emergencia,
+    estera,
+    faturamento,
+    ntCancelada,
+    ntReprogramada,
+  ]);
 
   const submitExec = useCallback(() => {
     navigate("executada", { date, dateB });
@@ -325,7 +348,7 @@ export function Gestao() {
             <Box bg="blue.10" p="2" borderRadius="4">
               <Text color="#fff" bold fontSize={16}>
                 {" "}
-                mês de referência {format(date, "MM/yyyy")}
+                mês de referência {format(dateB, "MM/yyyy")}
               </Text>
             </Box>
             <TouchableOpacity onPress={adMonth}>
@@ -342,12 +365,12 @@ export function Gestao() {
             mb="5"
             borderColor="blue.10"
             borderWidth="3"
-            bg="white.50"
+            bg="white.100"
             px="2"
             w={w * 0.76}
           >
             <Text fontSize={18} bold>
-              title
+              Faturamento
             </Text>
 
             <Text>{totalEstera.fatu}</Text>
@@ -371,7 +394,7 @@ export function Gestao() {
             w={w * 0.7}
           >
             <Text fontSize={18} bold>
-              title
+              Total
             </Text>
 
             <Text mt="2">{totalEstera.total}</Text>

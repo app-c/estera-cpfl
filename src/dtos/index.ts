@@ -66,6 +66,7 @@ export interface IPropsEquipe {
   equipe: string;
   mobilidade: boolean;
   dados: IProsFuncionarios[];
+  faturamento: number;
 }
 export interface IProsFuncionarios {
   id: string;
