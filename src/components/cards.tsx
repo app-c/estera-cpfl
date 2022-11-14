@@ -12,7 +12,10 @@ interface Props {
   color: string;
   equipe: IPropsEquipe[];
   supervisor?: string;
-  situation: string;
+  situation: {
+    ntParcial: boolean;
+    ntCancelada: boolean;
+  };
   showModal: () => void;
 }
 
@@ -69,7 +72,7 @@ export function Cards({
               {value}
             </Text>
 
-            {situation === "nt_parcial" && (
+            {situation.ntParcial && (
               <TouchableOpacity>
                 <Box>
                   <Feather
@@ -81,7 +84,7 @@ export function Cards({
               </TouchableOpacity>
             )}
 
-            {situation === "nt_cancelada" && (
+            {situation.ntCancelada && (
               <TouchableOpacity>
                 <Box>
                   <Feather

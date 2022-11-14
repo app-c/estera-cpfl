@@ -39,6 +39,8 @@ export interface IProsEster {
   // CAPEX: string;
   EQUIPE?: IPropsEquipe[];
   SUPERVISOR?: string;
+  ntParcial: boolean;
+  ntCancelada: boolean;
   situation?:
     | "estera"
     | "processo"

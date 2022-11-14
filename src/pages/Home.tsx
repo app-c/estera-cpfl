@@ -148,6 +148,28 @@ export function Home() {
     showModeB("date");
   }, [showModeB]);
 
+  // React.useEffect(() => {
+  //   fire()
+  //     .collection("notas")
+  //     .get()
+  //     .then((h) => {
+  //       const rs = h.docs.map((p) => p.data() as IProsEster);
+
+  //       rs.forEach((r) => {
+  //         const dt = {
+  //           ...r,
+  //           ntParcial: false,
+  //           ntCancelada: false,
+  //         };
+  //         fire()
+  //           .collection("notas")
+  //           .doc(r.id)
+  //           .update(dt)
+  //           .then((h) => console.log("ok"));
+  //       });
+  //     });
+  // }, []);
+
   // TODO NOTAS
   const nt = React.useMemo(() => {
     const res = estera
@@ -195,46 +217,71 @@ export function Home() {
     const nota = filterWihDate.length > 0 ? filterWihDate : [];
     const notaCompare = [];
 
-    nota.forEach((est: IProsEster) => {
-      const findP = ntReprogramada.find((h) => h.Nota === est.Nota);
-      const findC = ntCancelada.find((h) => h.Nota === est.Nota);
+    ntReprogramada.forEach((h) => {
+      nota.forEach((p: IProsEster) => {
+        if (p.Nota === h.Nota) {
+          const dados = {
+            ...p,
+            Dt_programação: p.Dt_programação,
+            EQUIPE: h.EQUIPE || [],
+            OBSERVACAO: p.OBSERVACAO || "obs",
+            ntParcial: true,
+          };
 
-      if (findP) {
-        const dados = {
-          ...est,
-          Dt_programação: est.Dt_programação,
-          EQUIPE: findP.EQUIPE,
-          situation: "nt_parcial",
-          OBSERVACAO: findP.OBSERVACAO,
-        };
-        notaCompare.push(dados);
-        fire().collection("notas").doc(est.id).update(dados);
-        fire().collection("nt-parcial").doc(findP.id).delete();
-      } else {
-        notaCompare.push(est);
-      }
-
-      if (findC) {
-        const dados = {
-          ...est,
-          Dt_programação: est.Dt_programação,
-          EQUIPE: findP.EQUIPE,
-          situation: "nt_parcial",
-          OBSERVACAO: findP.OBSERVACAO,
-        };
-        notaCompare.push(dados);
-        fire().collection("notas").doc(est.id).update(dados);
-        fire().collection("nt-cancelada").doc(findP.id).delete();
-      }
+          fire()
+            .collection("notas")
+            .doc(p.id)
+            .update(dados)
+            .then((h) => console.log("ok"));
+        }
+      });
     });
+    console.log(
+      "nota",
+      nota.map((h) => h.ntParcial)
+    );
+
+    // nota.forEach((est: IProsEster) => {
+    //   const findP = ntReprogramada.find((h) => h.Nota === est.Nota);
+    //   const findC = ntCancelada.find((h) => h.Nota === est.Nota);
+
+    //   // if (findP) {
+    //   //   const dados = {
+    //   //     ...est,
+    //   //     Dt_programação: est.Dt_programação,
+    //   //     EQUIPE: findP.EQUIPE || [],
+    //   //     situation: "nt_parcial",
+    //   //     OBSERVACAO: findP.OBSERVACAO,
+    //   //   };
+    //   //   notaCompare.push(dados);
+    //   //   // fire().collection("notas").doc(est.id).update(dados);
+    //   //   // fire().collection("nt-parcial").doc(findP.id).delete();
+    //   // } else {
+    //   //   notaCompare.push(est);
+    //   // }
+
+    //   if (findC) {
+    //     console.log(findC.Nota);
+    //     //   const dados = {
+    //     //     ...est,
+    //     //     Dt_programação: est.Dt_programação,
+    //     //     EQUIPE: findP.EQUIPE,
+    //     //     situation: "nt_parcial",
+    //     //     OBSERVACAO: findP.OBSERVACAO,
+    //     //   };
+    //     //   notaCompare.push(dados);
+    //     //   fire().collection("notas").doc(est.id).update(dados);
+    //     //   fire().collection("nt-cancelada").doc(findP.id).delete();
+    //   }
+    // });
 
     const notaFilter = search
-      ? notaCompare.filter((h) => {
+      ? nota.filter((h) => {
           if (h.Nota.includes(search)) {
             return h;
           }
         })
-      : notaCompare;
+      : nota;
 
     const nt_estera = notaFilter.filter(
       (h) =>
@@ -373,7 +420,7 @@ export function Home() {
       parcial,
       cancelada,
     };
-  }, [nt]);
+  }, [date, dateB, nt, ntCancelada, ntReprogramada]);
 
   if (!nt) {
     return <ActivityIndicator />;
@@ -543,7 +590,10 @@ export function Home() {
                       equipe={h.EQUIPE}
                       color="dark.100"
                       showModal={() => handleShowModal(h)}
-                      situation={h.situation}
+                      situation={{
+                        ntParcial: h.ntParcial,
+                        ntCancelada: h.ntCancelada,
+                      }}
                     />
                   )}
                 />
@@ -571,6 +621,10 @@ export function Home() {
                       h.EQUIPE ? h.EQUIPE : [{ equipe: "GED", dados: [] }]
                     }
                     showModal={() => handleShowModal(h)}
+                    situation={{
+                      ntParcial: h.ntParcial,
+                      ntCancelada: h.ntCancelada,
+                    }}
                   />
                 )}
               />
@@ -597,6 +651,10 @@ export function Home() {
                     }
                     showModal={() => handleShowModal(h)}
                     color="green.400"
+                    situation={{
+                      ntParcial: h.ntParcial,
+                      ntCancelada: h.ntCancelada,
+                    }}
                   />
                 )}
               />
@@ -623,6 +681,10 @@ export function Home() {
                     supervisor={h.SUPERVISOR}
                     color="yellow.500"
                     showModal={() => handleShowModal(h)}
+                    situation={{
+                      ntParcial: h.ntParcial,
+                      ntCancelada: h.ntCancelada,
+                    }}
                   />
                 )}
               />
@@ -646,6 +708,10 @@ export function Home() {
                     supervisor={h.SUPERVISOR}
                     showModal={() => handleShowModal(h)}
                     color="red.400"
+                    situation={{
+                      ntParcial: h.ntParcial,
+                      ntCancelada: h.ntCancelada,
+                    }}
                   />
                 )}
               />

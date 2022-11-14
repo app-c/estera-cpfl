@@ -203,14 +203,13 @@ export function ModalD({
 
       <ScrollView>
         <VStack alignSelf="flex-start">
-          <Box w="100%" p="2" bg="dark.700">
-            <Text>Texto_das_medidas: {estera.TLE}</Text>
+          <Box w="100%" p="2" bg="dark.800">
+            <Text>TES / TLE: {estera.TLE}</Text>
             <Text>Dt_programação: {estera.Dt_programação}</Text>
             <Text>MO: {estera.MO}</Text>
             {nota && (
               <Box>
                 <Text>SUPERVISOR: {nota.SUPERVISOR}</Text>
-                <Text>SITUAÇÃO: {nota.situation}</Text>
                 <Text>Porcentual: {nota.PORCENTUAL}</Text>
                 {nota && (
                   <Box>
@@ -245,13 +244,13 @@ export function ModalD({
               LOCALIZAÇÃO
             </Button> */}
           </Box>
+          <Text>Cidade: {estera.cidade}</Text>
           {/* <Text>Tipo: {estera.Tipo}</Text>
           <Text>Descricao_da_nota: {estera.Descricao_da_nota}</Text>
           <Text>TAM: {estera.TAM}</Text>
           <Text>Depart: {estera.Depart}</Text>
           <Text>Divisão: {estera.Divisão}</Text>
           <Text>Bop: {estera.Bop}</Text>
-          <Text>Cidade: {estera.Cidade}</Text>
           <Text>Distribuidora: {estera.Distribuidora}</Text>
           <Text>Fábrica: {estera.Fábrica}</Text>
           <Text>Status: {estera.Status}</Text>
