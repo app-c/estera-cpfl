@@ -126,7 +126,6 @@ export function Home() {
   }, []);
 
   const showDatepicker = React.useCallback(() => {
-    console.log("date");
     showMode("date");
   }, [showMode]);
 
@@ -221,10 +220,10 @@ export function Home() {
       nota.forEach((p: IProsEster) => {
         if (p.Nota === h.Nota) {
           const dados = {
-            ...p,
+            ...h,
+            TLE: p.TLE,
+            MO: p.MO,
             Dt_programação: p.Dt_programação,
-            EQUIPE: h.EQUIPE || [],
-            OBSERVACAO: p.OBSERVACAO || "obs",
             ntParcial: true,
           };
 
@@ -233,47 +232,41 @@ export function Home() {
             .doc(p.id)
             .update(dados)
             .then((h) => console.log("ok"));
+
+          fire()
+            .collection("nt-parcial")
+            .doc(h.id)
+            .delete()
+            .then(() => console.log("nota deletada da parcial"));
         }
       });
     });
-    console.log(
-      "nota",
-      nota.map((h) => h.ntParcial)
-    );
 
-    // nota.forEach((est: IProsEster) => {
-    //   const findP = ntReprogramada.find((h) => h.Nota === est.Nota);
-    //   const findC = ntCancelada.find((h) => h.Nota === est.Nota);
+    ntCancelada.forEach((h) => {
+      nota.forEach((p: IProsEster) => {
+        if (p.Nota === h.Nota) {
+          const dados = {
+            ...h,
+            TLE: p.TLE,
+            MO: p.MO,
+            Dt_programação: p.Dt_programação,
+            ntParcial: true,
+          };
 
-    //   // if (findP) {
-    //   //   const dados = {
-    //   //     ...est,
-    //   //     Dt_programação: est.Dt_programação,
-    //   //     EQUIPE: findP.EQUIPE || [],
-    //   //     situation: "nt_parcial",
-    //   //     OBSERVACAO: findP.OBSERVACAO,
-    //   //   };
-    //   //   notaCompare.push(dados);
-    //   //   // fire().collection("notas").doc(est.id).update(dados);
-    //   //   // fire().collection("nt-parcial").doc(findP.id).delete();
-    //   // } else {
-    //   //   notaCompare.push(est);
-    //   // }
+          fire()
+            .collection("notas")
+            .doc(p.id)
+            .update(dados)
+            .then((h) => console.log("ok"));
 
-    //   if (findC) {
-    //     console.log(findC.Nota);
-    //     //   const dados = {
-    //     //     ...est,
-    //     //     Dt_programação: est.Dt_programação,
-    //     //     EQUIPE: findP.EQUIPE,
-    //     //     situation: "nt_parcial",
-    //     //     OBSERVACAO: findP.OBSERVACAO,
-    //     //   };
-    //     //   notaCompare.push(dados);
-    //     //   fire().collection("notas").doc(est.id).update(dados);
-    //     //   fire().collection("nt-cancelada").doc(findP.id).delete();
-    //   }
-    // });
+          fire()
+            .collection("nt-cancelada")
+            .doc(h.id)
+            .delete()
+            .then(() => console.log("nota deletada da parcial"));
+        }
+      });
+    });
 
     const notaFilter = search
       ? nota.filter((h) => {
@@ -391,8 +384,7 @@ export function Home() {
       return (ac += Number(it.MO));
     }, 0);
 
-    const subTotal =
-      tl + exe + tp + parcia + cancelad + nt_parcial + nt_cancelada;
+    const subTotal = tl + exe + tp + parcia + cancelad;
 
     const total = subTotal.toLocaleString("pt-BR", {
       style: "currency",
@@ -584,6 +576,7 @@ export function Home() {
                   keyExtractor={(h) => h.Nota}
                   renderItem={({ item: h }) => (
                     <Cards
+                      tle={h.TLE}
                       title={h.Nota}
                       value={h.price}
                       supervisor={h.SUPERVISOR}

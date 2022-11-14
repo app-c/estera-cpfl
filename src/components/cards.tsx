@@ -10,6 +10,7 @@ interface Props {
   value: string;
   title: string;
   color: string;
+  tle: string;
   equipe: IPropsEquipe[];
   supervisor?: string;
   situation: {
@@ -27,6 +28,7 @@ export function Cards({
   equipe,
   supervisor,
   showModal,
+  tle,
 }: Props) {
   const w = Dimensions.get("window").width;
 
@@ -64,6 +66,7 @@ export function Cards({
               </HStack>
             </Box>
           )}
+          <Text color="white.100">TES/TLE: {tle}</Text>
           <Text color="dark.900" bold>
             Supervisor: {supervisor}
           </Text>
