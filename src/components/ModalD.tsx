@@ -234,6 +234,10 @@ export function ModalD({
               <Text bold>Observações: </Text>
               <Text>{nota ? nota.OBSERVACAO : ""}</Text>
             </Box>
+
+            <Box>
+              <Text>{nota.obs_past}</Text>
+            </Box>
           </Box>
           <Box mt="5">
             {/* <Button

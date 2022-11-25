@@ -9,6 +9,7 @@ export interface IProsEster {
   // Divisão: string;
   // Bop: string;
   cidade: string;
+  obs_past: string;
   // Distribuidora: string;
   // Fábrica: string;
   // Status: string;

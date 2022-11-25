@@ -157,8 +157,7 @@ export function Home() {
   //       rs.forEach((r) => {
   //         const dt = {
   //           ...r,
-  //           ntParcial: false,
-  //           ntCancelada: false,
+  //           obs_past: "",
   //         };
   //         fire()
   //           .collection("notas")
@@ -223,6 +222,7 @@ export function Home() {
             ...h,
             TLE: p.TLE,
             MO: p.MO,
+            obs_past: h.OBSERVACAO,
             Dt_programação: p.Dt_programação,
             ntParcial: true,
           };
@@ -248,6 +248,7 @@ export function Home() {
           const dados = {
             ...h,
             TLE: p.TLE,
+            obs_past: h.OBSERVACAO,
             MO: p.MO,
             Dt_programação: p.Dt_programação,
             ntParcial: true,
@@ -268,13 +269,14 @@ export function Home() {
       });
     });
 
-    const notaFilter = search
-      ? nota.filter((h) => {
-          if (h.Nota.includes(search)) {
-            return h;
-          }
-        })
-      : nota;
+    const notaFilter =
+      search !== ""
+        ? nota.filter((h) => {
+            if (h.Nota.includes(search)) {
+              return h;
+            }
+          })
+        : nota;
 
     const nt_estera = notaFilter.filter(
       (h) =>
