@@ -1,8 +1,8 @@
 /* eslint-disable consistent-return */
 /* eslint-disable array-callback-return */
-import React, { createContext } from "react";
 import fire from "@react-native-firebase/firestore";
 import { eachDayOfInterval, format } from "date-fns";
+import React, { createContext } from "react";
 import { IC4, IFaturamento, IProsEster, IProsFuncionarios } from "../dtos";
 
 interface ProviderProps {
@@ -41,7 +41,7 @@ export function NotasProvider({ children }: ProviderProps) {
   const [faturamento, setFaturamaneto] = React.useState<IFaturamento[]>([]);
   const [notasPorData, setNotasPorData] = React.useState({} as ProsNotasData);
 
-  React.useEffect(() => {
+  const loadData = React.useCallback(() => {
     fire()
       .collection("notas")
       .onSnapshot((h) => {
@@ -145,6 +145,10 @@ export function NotasProvider({ children }: ProviderProps) {
         setFaturamaneto(rs);
       });
   }, []);
+
+  React.useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   const GDS = React.useMemo(() => {
     const ADM = [];

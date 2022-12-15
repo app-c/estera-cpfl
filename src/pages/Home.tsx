@@ -2,7 +2,10 @@
 /* eslint-disable no-return-assign */
 /* eslint-disable array-callback-return */
 /* eslint-disable camelcase */
-import React, { useCallback, useContext, useState } from "react";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import fire from "@react-native-firebase/firestore";
+import { format } from "date-fns";
+import { eachDayOfInterval } from "date-fns/esm";
 import {
   Box,
   Button,
@@ -11,31 +14,26 @@ import {
   HStack,
   Input,
   ScrollView,
-  Text,
+  Text
 } from "native-base";
+import React, { useCallback, useContext, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
   Dimensions,
   Modal,
   Platform,
-  TouchableOpacity,
+  TouchableOpacity
 } from "react-native";
-import fire from "@react-native-firebase/firestore";
-import DateTimePicker from "@react-native-community/datetimepicker";
-import { format } from "date-fns";
-import { eachDayOfInterval } from "date-fns/esm";
-import { CardTotal } from "../components/cardTotal";
 import { Cards } from "../components/cards";
-import { ModalD } from "../components/ModalD";
-import { IUser, useAuth } from "../hooks/AuthContext";
-import { notas as es } from "../utilis/estera";
-import { IPropsEquipe, IProsEster } from "../dtos";
-import { FUNCIONARIOS } from "../utilis/funcionarios";
-import { NotasContext, NotasProvider } from "../context/ListNotas";
-import { theme } from "../global/theme";
-import { ModalAlteraEquiSuper } from "../components/ModalAlteraEqSuper";
+import { CardTotal } from "../components/cardTotal";
 import { Header } from "../components/header";
+import { ModalAlteraEquiSuper } from "../components/ModalAlteraEqSuper";
+import { ModalD } from "../components/ModalD";
+import { NotasContext, NotasProvider } from "../context/ListNotas";
+import { IPropsEquipe, IProsEster } from "../dtos";
+import { theme } from "../global/theme";
+import { useAuth } from "../hooks/AuthContext";
 
 export function Home() {
   const { colors } = theme;
@@ -314,21 +312,28 @@ export function Home() {
 
   const submit = React.useCallback(() => {
     fire()
-      .collection("nota-teste")
+      .collection("notas")
       .get()
       .then((h) => {
-        const rs = h.docs.map((p) => p.data());
+        const rs = h.docs.map((p) => {
+          return {
+            ...p.data(),
+            id: p.id,
+          };
+        });
 
-        const dados = {
-          Nota: 300000718043,
-          Dt_programação: "08/11/2022",
-          situation: "estera",
-          MO: 17042,
-          EQUIPE: [],
-          OBSERVACAO: "",
-        };
-
-        fire().collection("notas").add(dados);
+        rs.forEach((n: IProsEster) => {
+          fire()
+            .collection("notas")
+            .doc(n.id)
+            .update({
+              obsPlanejamento: "",
+              obsExecucao: "",
+              obsFocal: "",
+            })
+            .then(() => console.log("update"))
+            .catch(() => console.log("erro"));
+        });
       });
   }, []);
 

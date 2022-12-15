@@ -1,4 +1,5 @@
-import React, { useContext, useState } from "react";
+import fire from "@react-native-firebase/firestore";
+import { Feather } from "expo-vector-icons";
 import {
   Box,
   Button,
@@ -6,15 +7,14 @@ import {
   FormControl,
   Select,
   Text,
-  WarningOutlineIcon,
+  WarningOutlineIcon
 } from "native-base";
-import { Dimensions, ActivityIndicator, TouchableOpacity } from "react-native";
-import fire from "@react-native-firebase/firestore";
-import { Feather } from "expo-vector-icons";
-import { IPropsEquipe, IProsEster, IProsFuncionarios } from "../dtos";
-import { IUser } from "../hooks/AuthContext";
+import React, { useContext, useState } from "react";
+import { ActivityIndicator, Dimensions, TouchableOpacity } from "react-native";
 import { NotasContext } from "../context/ListNotas";
+import { IPropsEquipe, IProsEster, IProsFuncionarios } from "../dtos";
 import { theme } from "../global/theme";
+import { IUser } from "../hooks/AuthContext";
 
 interface Props {
   selectEquipe: IPropsEquipe[];

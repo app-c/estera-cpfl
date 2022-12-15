@@ -1,8 +1,5 @@
-import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { Home } from "../pages/Home";
-import { Grafico } from "../pages/Grafico";
-import { GestaoRoutes } from "./GestaoRoutes";
+import React from "react";
 import { Gestao } from "../pages/Gestao";
 import { Executada } from "../pages/Gestor/Executa";
 import { Parcial } from "../pages/Gestor/Parcial";

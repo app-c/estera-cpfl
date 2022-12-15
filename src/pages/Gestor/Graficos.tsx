@@ -1,17 +1,14 @@
 /* eslint-disable no-return-assign */
-import React, { useContext, useState } from "react";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { eachDayOfInterval, format } from "date-fns";
 import { Box, Center, HStack, Text } from "native-base";
+import React, { useContext, useState } from "react";
+import { Platform, ScrollView, TouchableOpacity } from "react-native";
 import {
   VictoryBar,
   VictoryChart,
-  VictoryGroup,
-  VictoryLine,
-  VictoryPie,
-  VictoryTheme,
+  VictoryGroup, VictoryPie
 } from "victory-native";
-import DateTimePicker from "@react-native-community/datetimepicker";
-import { Platform, ScrollView, TouchableOpacity } from "react-native";
-import { eachDayOfInterval, format } from "date-fns";
 import { Header } from "../../components/header";
 import { NotasContext } from "../../context/ListNotas";
 import { IProsEster } from "../../dtos";
