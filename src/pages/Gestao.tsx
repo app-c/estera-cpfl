@@ -11,22 +11,21 @@ import {
   ScrollView,
   Select,
   Text,
-  WarningOutlineIcon,
+  WarningOutlineIcon
 } from "native-base";
 
-import React, { useCallback, useContext, useMemo, useState } from "react";
-import DateTimePicker from "@react-native-community/datetimepicker";
-import { Alert, Dimensions, Platform, TouchableOpacity } from "react-native";
-import { add, addDays, eachDayOfInterval, format } from "date-fns";
-import { Feather } from "expo-vector-icons";
-import { addMonths } from "date-fns/esm";
-import { useNavigation } from "@react-navigation/native";
 import fire from "@react-native-firebase/firestore";
-import { NotasContext } from "../context/ListNotas";
+import { useNavigation } from "@react-navigation/native";
+import { addDays, eachDayOfInterval, format } from "date-fns";
+import { addMonths } from "date-fns/esm";
+import { Feather } from "expo-vector-icons";
+import React, { useCallback, useContext, useMemo } from "react";
+import { Alert, Dimensions, TouchableOpacity } from "react-native";
 import { CardGestao } from "../components/CadsGestao";
+import { Header } from "../components/header";
+import { NotasContext } from "../context/ListNotas";
 import { IC4 } from "../dtos";
 import { theme } from "../global/theme";
-import { Header } from "../components/header";
 import { Meses } from "../utilis/meses";
 
 interface IProps {
@@ -190,8 +189,6 @@ export function Gestao() {
     const tlC4 = filC4.reduce((ac, i: IC4) => {
       return (ac += Number(i.valor));
     }, 0);
-
-    console.log(filC4);
 
     const tlEmer = filEmergencia.reduce((ac, i: IC4) => {
       return (ac += Number(i.valor));

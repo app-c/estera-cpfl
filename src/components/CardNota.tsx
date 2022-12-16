@@ -1,5 +1,5 @@
-import React from "react";
 import { Box, Center, HStack, Image, Text } from "native-base";
+import React from "react";
 import { TouchableOpacity } from "react-native";
 import truck from "../assets/images.png";
 

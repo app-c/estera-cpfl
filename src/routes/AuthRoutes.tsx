@@ -1,9 +1,8 @@
-import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Entypo } from "expo-vector-icons";
-import { Home } from "../pages/Home";
+import React from "react";
 import { Grafico } from "../pages/Grafico";
-import { GestaoRoutes } from "./GestaoRoutes";
+import { StackGestao } from "./StackGestao";
 
 const { Navigator, Screen } = createBottomTabNavigator();
 
@@ -15,8 +14,8 @@ export function AuthRoutes() {
       }}
     >
       <Screen
-        component={Home}
-        name="HOME"
+        component={StackGestao}
+        name="Gestão"
         options={{
           tabBarIcon: ({ size, color }) => (
             <Entypo name="home" size={size} color={color} />

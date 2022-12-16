@@ -1,18 +1,14 @@
 /* eslint-disable react/require-default-props */
-import React from "react";
+import { Feather } from "expo-vector-icons";
 import { Box, Center, HStack, Text, VStack } from "native-base";
+import React from "react";
 import { Dimensions, TouchableOpacity } from "react-native";
-import { Feather, FontAwesome5 } from "expo-vector-icons";
-import { IPropsEquipe } from "../dtos";
+import { IProsEster } from "../dtos";
 import { theme } from "../global/theme";
 
 interface Props {
-  value: string;
-  title: string;
+  nota: IProsEster;
   color: string;
-  tle: string;
-  equipe: IPropsEquipe[];
-  supervisor?: string;
   situation: {
     ntParcial: boolean;
     ntCancelada: boolean;
@@ -20,17 +16,13 @@ interface Props {
   showModal: () => void;
 }
 
-export function Cards({
-  value,
-  situation,
-  title,
-  color,
-  equipe,
-  supervisor,
-  showModal,
-  tle,
-}: Props) {
+export function Cards({ nota, situation, color, showModal }: Props) {
   const w = Dimensions.get("window").width;
+
+  const mo = nota.MO.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  });
 
   return (
     <TouchableOpacity onPress={showModal}>
@@ -41,24 +33,23 @@ export function Cards({
         borderWidth="4"
         bg="dark.50"
         w={w * 0.6}
-        // h={w * 0.25}
         p="2"
         borderRadius={10}
       >
         <Center bg="white.100">
-          <Text bold fontSize={18}>
-            {title}
+          <Text bold fontSize={16}>
+            {nota.Nota}
           </Text>
         </Center>
 
         <VStack mt="2" space="1">
-          {equipe && (
+          {nota.EQUIPE && (
             <Box>
               <Text color="white.100" bold>
                 Equipe:
               </Text>
               <HStack space={2}>
-                {equipe.map((h) => (
+                {nota.EQUIPE.map((h) => (
                   <Text color="white.50" key={h.id}>
                     {h.equipe}
                   </Text>
@@ -66,13 +57,14 @@ export function Cards({
               </HStack>
             </Box>
           )}
-          <Text color="white.100">TES/TLE: {tle}</Text>
+
+          <Text color="white.100">TES/TLE: {nota.TLE}</Text>
           <Text color="dark.900" bold>
-            Supervisor: {supervisor}
+            Supervisor: {nota.SUPERVISOR}
           </Text>
           <HStack justifyContent="space-between">
             <Text color="dark.900" bold>
-              {value}
+              {mo}
             </Text>
 
             {situation.ntParcial && (
