@@ -1,8 +1,20 @@
+import { IProsEster } from "../dtos";
+
 /* eslint-disable camelcase */
 interface PropsParcial {
   date: Date;
   dateB: Date;
 }
+
+interface IInfoNota {
+  item: IProsEster;
+  type?: string;
+}
+
+type IPropsTratativa = {
+  id: string;
+};
+
 export declare global {
   namespace ReactNavigation {
     interface RootParamList {
@@ -10,7 +22,10 @@ export declare global {
       singIn: undefined;
       grafico: undefined;
       parcial: PropsParcial;
-      executada: PropsParcial;
+      // executada: PropsParcial;
+      infoNota: IInfoNota;
+      tratativa: IInfoNota;
+      executada: IInfoNota;
     }
   }
 }

@@ -3,6 +3,7 @@
 /* eslint-disable array-callback-return */
 /* eslint-disable camelcase */
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { useNavigation } from "@react-navigation/native";
 import { eachDayOfInterval, format } from "date-fns";
 import { Box, FlatList, Input, ScrollView, Text } from "native-base";
 import React, { useContext, useState } from "react";
@@ -15,12 +16,14 @@ import { theme } from "../global/theme";
 import { useAuth } from "../hooks/AuthContext";
 import { ContentData, ContentNotas, TouchData } from "./styles/home";
 
+const w = Dimensions.get("window").width / 2;
+
 export function Home() {
+  const { navigate } = useNavigation();
+
   const { colors } = theme;
   const { estera, GDS, ntCancelada, ntReprogramada } = useContext(NotasContext);
   const { user, signOut } = useAuth();
-
-  const w = Dimensions.get("window").width / 2;
 
   const [mode, setMode] = useState("date");
   const [modeB, setModeB] = useState("date");
@@ -68,17 +71,16 @@ export function Home() {
   }, [showModeB]);
 
   const notas = React.useMemo(() => {
+    const filterNotaByDate: IProsEster[] = [];
+
     const filSearch =
       search !== ""
         ? estera.filter((i) => {
             if (i.Nota.includes(search)) {
-              return -1;
+              return i;
             }
-            return 0;
           })
         : estera;
-
-    const filterNotaByDate: IProsEster[] = [];
 
     if (date.getTime() <= dateB.getTime()) {
       const ruslt = eachDayOfInterval({
@@ -96,11 +98,84 @@ export function Home() {
       });
     }
 
-    return filterNotaByDate;
-  }, [date, dateB, estera, search]);
+    const base = [];
+    const proces = [];
+    const executada = [];
+    const parcial = [];
+    const cancelada = [];
+    let total = 0;
+
+    filterNotaByDate.forEach((i) => {
+      const vlE = 0;
+      const vlP = 0;
+
+      if (i.situation === "estera" && user.type !== "supervisor") {
+        base.push(i);
+        const vl = vlE + i.MO;
+        total += i.MO;
+      }
+
+      if (i.situation === "processo") {
+        if (user.type === "adm" || user.nome === i.SUPERVISOR) {
+          proces.push(i);
+          const vl = vlP + i.MO;
+          total += i.MO;
+        }
+      }
+
+      if (i.situation === "executada") {
+        if (user.type === "adm" || user.nome === i.SUPERVISOR) {
+          executada.push(i);
+        }
+      }
+
+      if (i.situation === "parcial") {
+        if (user.type === "adm" || user.nome === i.SUPERVISOR) {
+          parcial.push(i);
+        }
+      }
+
+      if (i.situation === "cancelada") {
+        if (user.type === "adm" || user.nome === i.SUPERVISOR) {
+          cancelada.push(i);
+        }
+      }
+      total = vlE + vlP;
+    });
+
+    return {
+      total,
+      base,
+      proces,
+      executada,
+      parcial,
+      cancelada,
+    };
+  }, [date, dateB, estera, search, user]);
+
+  const handleNavigateInfo = React.useCallback(
+    (item: IProsEster) => {
+      navigate("infoNota", { item });
+    },
+    [navigate]
+  );
+
+  const navigatetratativa = React.useCallback(
+    (item: IProsEster, type: string) => {
+      navigate("tratativa", { item, type });
+    },
+    [navigate]
+  );
+
+  const navigateExecutada = React.useCallback(
+    (item: IProsEster) => {
+      navigate("executada", { item });
+    },
+    [navigate]
+  );
 
   return (
-    <Box flex={1} bg="#454545">
+    <Box flex="1" bg="#454545">
       <Header />
 
       <ContentData>
@@ -122,6 +197,7 @@ export function Home() {
           h={10}
           onChangeText={setSearch}
           keyboardType="numeric"
+          color="#fff"
         />
 
         {show && (
@@ -144,58 +220,126 @@ export function Home() {
           />
         )}
       </ContentData>
+
+      <Text color="#fff">Total MO R$ {notas.total}</Text>
+
       <ScrollView
         contentContainerStyle={{
           paddingBottom: 100,
         }}
       >
         <ContentNotas>
-          <Text ml={10} color="#fff" bold fontSize={14}>
-            Notas com os encarregados
+          <Text ml={10} color="#fe7012" bold fontSize={14}>
+            Notas na base
           </Text>
           <FlatList
             contentContainerStyle={{
               paddingHorizontal: 20,
             }}
             horizontal
-            data={notas}
+            data={notas.base}
             keyExtractor={(h) => h.id}
             renderItem={({ item: i }) => (
-              <Cards color="#fff" nota={i} situation={i.situation} />
+              <Cards
+                info={() => handleNavigateInfo(i)}
+                color="rgba(151, 147, 147, 0.187)"
+                nota={i}
+              />
             )}
           />
         </ContentNotas>
 
         <ContentNotas>
-          <Text ml={10} color="#fff" bold fontSize={14}>
-            Notas com os encarregados
-          </Text>
+          {notas.proces.length > 0 && (
+            <Text ml={10} color="#cdcdcd" bold fontSize={14}>
+              Notas com os encarregados
+            </Text>
+          )}
           <FlatList
             contentContainerStyle={{
               paddingHorizontal: 20,
             }}
             horizontal
-            data={notas}
+            data={notas.proces}
             keyExtractor={(h) => h.id}
             renderItem={({ item: i }) => (
-              <Cards color="#fff" nota={i} situation={i.situation} />
+              <Cards
+                info={() => handleNavigateInfo(i)}
+                color="#fff"
+                nota={i}
+                finish={() => navigateExecutada(i)}
+                partial={() => navigatetratativa(i, "partial")}
+                canceled={() => navigatetratativa(i, "canceled")}
+              />
             )}
           />
         </ContentNotas>
 
         <ContentNotas>
-          <Text ml={10} color="#fff" bold fontSize={14}>
-            Notas com os encarregados
-          </Text>
+          {notas.executada.length > 0 && (
+            <Text ml={10} color="#21ff6b" bold fontSize={14}>
+              Notas parciais
+            </Text>
+          )}
           <FlatList
             contentContainerStyle={{
               paddingHorizontal: 20,
             }}
             horizontal
-            data={notas}
+            data={notas.executada}
             keyExtractor={(h) => h.id}
             renderItem={({ item: i }) => (
-              <Cards color="#fff" nota={i} situation={i.situation} />
+              <Cards
+                info={() => handleNavigateInfo(i)}
+                color={colors.green[600]}
+                nota={i}
+              />
+            )}
+          />
+        </ContentNotas>
+
+        <ContentNotas>
+          {notas.parcial.length > 0 && (
+            <Text ml={10} color="#fdc938" bold fontSize={14}>
+              Notas parciais
+            </Text>
+          )}
+          <FlatList
+            contentContainerStyle={{
+              paddingHorizontal: 20,
+            }}
+            horizontal
+            data={notas.parcial}
+            keyExtractor={(h) => h.id}
+            renderItem={({ item: i }) => (
+              <Cards
+                info={() => handleNavigateInfo(i)}
+                color={colors.yellow[600]}
+                nota={i}
+              />
+            )}
+          />
+        </ContentNotas>
+
+        <ContentNotas>
+          {notas.cancelada.length > 0 && (
+            <Text ml={10} color="#ff4848" bold fontSize={14}>
+              Notas parciais
+            </Text>
+          )}
+          <FlatList
+            contentContainerStyle={{
+              paddingHorizontal: 20,
+            }}
+            horizontal
+            data={notas.cancelada}
+            keyExtractor={(h) => h.id}
+            renderItem={({ item: i }) => (
+              <Cards
+                color={colors.danger[600]}
+                nota={i}
+                info={() => handleNavigateInfo(i)}
+              />
             )}
           />
         </ContentNotas>

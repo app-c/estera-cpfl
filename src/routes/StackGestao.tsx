@@ -1,7 +1,9 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { InfoIcon } from "native-base";
 import React from "react";
+import { Executada } from "../pages/Executada";
 import { Home } from "../pages/Home";
+import { InfoNota } from "../pages/Infonota";
+import { Tratativa } from "../pages/Tratativa";
 
 const { Navigator, Screen } = createNativeStackNavigator();
 
@@ -13,7 +15,9 @@ export function StackGestao() {
       }}
     >
       <Screen component={Home} name="home" />
-      <Screen component={InfoIcon} name="infoNota" />
+      <Screen component={InfoNota} name="infoNota" />
+      <Screen component={Tratativa} name="tratativa" />
+      <Screen component={Executada} name="executada" />
     </Navigator>
   );
 }

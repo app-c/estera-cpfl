@@ -52,7 +52,13 @@ export function NotasProvider({ children }: ProviderProps) {
           } as IProsEster;
         });
 
-        setEstera(res);
+        setEstera(
+          res.filter((i) => {
+            if (i.Nota) {
+              return h;
+            }
+          })
+        );
       });
 
     fire()

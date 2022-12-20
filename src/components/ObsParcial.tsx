@@ -1,18 +1,10 @@
 /* eslint-disable no-param-reassign */
+import fire from "@react-native-firebase/firestore";
 import {
-  Box,
-  TextArea,
-  useDisclose,
-  Modal,
-  Text,
-  Center,
-  Input,
-  HStack,
-  ScrollView,
+  Box, Center, HStack, Input, Modal, ScrollView, Text, TextArea
 } from "native-base";
 import React, { useCallback, useState } from "react";
 import { Alert, Dimensions, TouchableOpacity } from "react-native";
-import fire from "@react-native-firebase/firestore";
 import { IPropsEquipe } from "../dtos";
 import { Slect } from "./select";
 

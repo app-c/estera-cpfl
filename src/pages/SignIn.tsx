@@ -1,5 +1,5 @@
+import { Button, Center, Text } from "native-base";
 import React from "react";
-import { Box, Button, Center, Text } from "native-base";
 import { TextInput } from "../components/TextInput";
 import { useAuth } from "../hooks/AuthContext";
 
