@@ -1,5 +1,5 @@
 import fire from "@react-native-firebase/firestore";
-import { useRoute } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { Box, Center, ScrollView, Text, TextArea } from "native-base";
 import React, { useContext } from "react";
 import { Dimensions } from "react-native";
@@ -14,8 +14,9 @@ type PropsFinish = "finish" | "partial" | "canceled";
 
 export function Executada() {
   const { estera } = useContext(NotasContext);
+  const { navigate } = useNavigation();
   const route = useRoute();
-  const item = route.params as IProsEster;
+  const { item } = route.params as IProsEster;
 
   const [typeFinish, setTypeFinish] = React.useState<PropsFinish>("partial");
 
@@ -36,8 +37,9 @@ export function Executada() {
           porcentual: porcent / 100,
         },
         situation: "executada",
-      });
-  }, [item.id, obs, porcent, qnt, time]);
+      })
+      .then(() => navigate("home"));
+  }, [item.id, navigate, obs, porcent, qnt, time]);
 
   return (
     <Container>
@@ -53,6 +55,7 @@ export function Executada() {
 
           <Center>
             <TextArea
+              onChangeText={setObs}
               _focus={{
                 borderColor: "#ce5d21",
                 backgroundColor: "#8a8a8a",
